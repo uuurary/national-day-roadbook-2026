@@ -1,0 +1,8 @@
+{
+  "name": "national-day-roadbook",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "license": "AGPL-3.0-only",
+  "scripts": {"test": "node --test tests/data.test.mjs", "build": "node scripts/build.mjs", "preview": "node scripts/serve.mjs"}
+}

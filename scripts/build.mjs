@@ -1,0 +1,10 @@
+import {mkdir,copyFile,cp,access} from 'node:fs/promises';
+import {fileURLToPath} from 'node:url';
+import path from 'node:path';
+const root=path.resolve(path.dirname(fileURLToPath(import.meta.url)),'..');
+const files=['index.html','app.js','style.css','favicon.svg','LICENSE','NOTICE.md','README.md','report.pdf','site-config.json','.nojekyll'];
+for(const f of files)await access(path.join(root,f));
+await mkdir(path.join(root,'dist'),{recursive:true});
+for(const f of files)await copyFile(path.join(root,f),path.join(root,'dist',f));
+for(const f of ['data','vendor'])await cp(path.join(root,f),path.join(root,'dist',f),{recursive:true});
+console.log('Static site built in dist/. No secrets or server components included.');
