@@ -17,7 +17,7 @@ const activeDays = () => [...activeTrip().variants[state.duration]].sort((a,b)=>
 const routeKeys = days => {const keys=[];for(const d of days)for(const k of d.path)if(keys.at(-1)!==k)keys.push(k);return keys;};
 const searchMap = text => 'https://www.amap.com/search?query='+encodeURIComponent(text);
 const googleRoute = keys => {
-  const names=keys.map(k=>data.anchors[k][0]);
+  const names=keys.map(k=>data.anchors[k][0].replace(/（.*?）/g,''));
   if(names.length<2)return 'https://www.google.com/maps/search/?api=1&query='+encodeURIComponent(names[0]||activeTrip().name);
   const params=new URLSearchParams({api:'1',origin:names[0],destination:names.at(-1),travelmode:'driving'});
   if(names.length>2)params.set('waypoints',names.slice(1,-1).join('|'));
@@ -52,7 +52,7 @@ function initMap(){
 function renderMap(){
   const selected=state.day?activeDays().filter(d=>d.day_number===state.day):activeDays();
   const keys=routeKeys(selected);const unique=[...new Set(keys)];
-  $('#map-title').textContent=state.day?`第${state.day}天 · ${selected[0].route}`:'全程路线 · 城市锚点';
+  $('#map-title').textContent=state.day?`第${state.day}天 · ${selected[0].route}`:'全程路线 · 城镇/村域锚点';
   $('#anchor-list').innerHTML=unique.map((k,i)=>`<button data-anchor="${k}">${i+1} ${escapeHTML(data.anchors[k][0])}</button>`).join('');
   if(!map){$('#map-status').textContent='地图不可用，可使用日程中的导航链接';return;}
   mapLayer.clearLayers();const bounds=[];let routed=0,total=0;
@@ -62,7 +62,7 @@ function renderMap(){
     if(segment?.geometry){const line=segment.geometry.coordinates.map(([lng,lat])=>[lat,lng]);L.polyline(line,{color:activeTrip().color,weight:4,opacity:.82}).addTo(mapLayer);bounds.push(...line);routed++;}
     else{const line=[data.anchors[a].slice(1),data.anchors[b].slice(1)];L.polyline(line,{color:activeTrip().color,weight:3,opacity:.6,dashArray:'6 8'}).bindTooltip('城市间方向示意，非道路导航').addTo(mapLayer);bounds.push(...line);}
   }
-  unique.forEach((k,i)=>{const [name,lat,lng]=data.anchors[k];bounds.push([lat,lng]);const icon=L.divIcon({html:`<span class="map-marker">${i+1}</span>`,className:'',iconSize:[30,30],iconAnchor:[15,15]});L.marker([lat,lng],{icon,title:name}).bindPopup(`<b>${escapeHTML(name)}</b><br>城市/镇区锚点，非精确入口<br><a href="${searchMap(name)}" target="_blank" rel="noopener">高德搜索 ↗</a>`).addTo(mapLayer);});
+  unique.forEach((k,i)=>{const [name,lat,lng]=data.anchors[k];bounds.push([lat,lng]);const icon=L.divIcon({html:`<span class="map-marker">${i+1}</span>`,className:'',iconSize:[30,30],iconAnchor:[15,15]});L.marker([lat,lng],{icon,title:name}).bindPopup(`<b>${escapeHTML(name)}</b><br>城镇/村域锚点，非精确入口<br><a href="${searchMap(name.replace(/（.*?）/g,''))}" target="_blank" rel="noopener">高德搜索 ↗</a>`).addTo(mapLayer);});
   routeBounds=L.latLngBounds(bounds);map.fitBounds(routeBounds,{padding:[35,35],maxZoom:11});
   $('#map-status').textContent=total===0?'当地游览区域 · 景点请按名称搜索':routed===total?'OSRM 城市间道路参考 · 非实时导航':`道路参考 ${routed}/${total} 段 · 虚线为方向示意`;
 }

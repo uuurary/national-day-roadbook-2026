@@ -18,7 +18,7 @@ corresponding source is the GitHub repository linked in the page footer.
 - Basemap: © OpenStreetMap contributors, https://www.openstreetmap.org/copyright
 - Road geometry: OSRM public routing service with OpenStreetMap data.
   https://project-osrm.org/ ; build-time cache only, no live traffic.
-- Coordinates are WGS84 city/town-area anchors, not authoritative scenic entrances
+- Coordinates are WGS84 city/town/village-area anchors, not authoritative scenic entrances
   or permission to camp. Links to Amap search use place names to avoid implying
   WGS84 coordinates are GCJ-02 navigation coordinates.
 - PDF and route descriptions: prepared for this itinerary; source citations in PDF
@@ -26,3 +26,8 @@ corresponding source is the GitHub repository linked in the page footer.
 
 Personal checklist and notes are stored only in localStorage, not uploaded.
 Map tiles and external map/search links contact their respective third parties.
+
+Anhui revision: Xixinan, Chengkan, Lucun village (not the exact viewpoint parking),
+Yansi, Biyang and Tongrui-area anchors were checked using OpenStreetMap Nominatim
+on 2026-09-20. Data © OpenStreetMap contributors, ODbL 1.0. Lu village in Yixian
+is distinct from Lucun town in Guangde. Search/navigation uses explicit place names.

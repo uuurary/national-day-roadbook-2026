@@ -28,6 +28,11 @@ const baseURL=process.env.BASE_URL||'http://127.0.0.1:4173/';
  await page.locator('[data-tab="backup"]').click();assert.equal(await page.locator('.alternative').count(),3);
  const pdf=await page.request.get(new URL('report.pdf',baseURL).href);assert.equal(pdf.status(),200);assert.match(pdf.headers()['content-type'],/pdf/);
  await page.locator('[data-tab="plan"]').click();await page.locator('[data-trip="anhui"]').click();await page.locator('[data-duration="5"]').click();await page.locator('[data-day="1"]').click();
+ await page.locator('[data-day="2"]').click();
+ assert.match(await page.locator('#map-title').innerText(),/桃花潭.*卢村/);
+ assert.match(await page.locator('#anchor-list').innerText(),/卢村观景台/);
+ assert.match(await page.locator('#body-2').innerText(),/黟县/);
+ await page.waitForTimeout(800);
  fs.mkdirSync('qa',{recursive:true});await page.screenshot({path:'qa/desktop.png',fullPage:true});
  await page.setViewportSize({width:390,height:844});
  for(const tab of ['plan','prepare','backup']){await page.locator(`[data-tab="${tab}"]`).click();const dim=await page.evaluate(()=>({w:document.documentElement.scrollWidth,v:innerWidth}));assert.ok(dim.w<=dim.v+1,`${tab}: horizontal page overflow ${dim.w}/${dim.v}`);await page.screenshot({path:`qa/mobile-${tab}.png`,fullPage:true});}

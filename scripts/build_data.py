@@ -27,6 +27,12 @@ anchors = {
  'gantang': ['黄山区甘棠',30.2730,118.1350],
  'xuancheng': ['宣城市区',30.9400,118.7520],
  'liyang': ['溧阳市区',31.4170,119.4820],
+ 'lucun': ['黟县卢村观景台（村域锚点）',30.0173730,117.9702933],
+ 'yixian': ['黟县县城（碧阳镇）',29.9234341,117.9382507],
+ 'xixinan': ['西溪南古村落（村域）',29.8344992,118.2813922],
+ 'chengkan': ['呈坎古村（村域）',29.9217184,118.2761838],
+ 'yansi': ['黄山徽州区岩寺镇',29.8284593,118.3335978],
+ 'guangde': ['广德市区（桐汭街道）',30.8964607,119.4119888],
  'huaian': ['淮安市区',33.6100,119.0150],
  'lianyungang': ['连云港海州',34.5970,119.2150],
  'rizhao': ['日照市区',35.4170,119.5200],
@@ -39,14 +45,14 @@ anchors = {
  'tonglu': ['桐庐县城',29.7940,119.6860],
 }
 cfgs = [
- dict(id='anhui',name='安徽',en='ANHUI',title='在皖南，把日子放慢',subtitle='泾县的竹林与溪谷，太平湖的水光，最后在宣城留一段返程缓冲。',color='#277c68',tag='最省力 · 首选',km='850-1050',budget='2000-4000',hotel='10月4日 · 黄山区甘棠',hotelCost='300-600元 / 间',daily=2,visits=3,sleep=4,backup=5,
-   paths=[['changzhou','jingxian'],['jingxian'],['jingxian','taohuatan','gantang'],['gantang','xuancheng'],['xuancheng','changzhou']],
-   dayTitles=['向皖南出发','竹林与溪谷','桃花潭，住一晚酒店','湖光与归途','从宣城，慢慢回家'],
-   charging=['泾县午餐时补能；沿途200-250 km主动找站。','回泾县后补到80%-90%，次日白天进山。','泾县出发前核电量；甘棠酒店附近快充。','湖区出发后到宣城补能，不依赖景区单桩。','宣城85%-90%出发，预测抵家留15%-20%。'],
-   meals=['泾县面条、锅贴配蛋；晚餐家常菜。','农家炖菜、时蔬；早餐提前采购。','桃花潭午餐；甘棠鱼汤或徽菜。','湖区清淡午餐，宣城晚餐。','早餐后出发，回常州午餐。'],
-   scenic=[['青弋江泾县步道'],['泾县月亮湾','水墨汀溪'],['桃花潭'],['太平湖','宣城宛陵湖'],[]],
-   warning='方塘红杉通常在11月至12月进入更好的红叶期；国庆不按满湖红色预期。川藏线可能限制部分车型，主线无需全程穿越。',
-   extra=[{'route':'宣城 → 溧阳','distance':'120-180 km / 2-3 h','schedule':'上午宣城散步，午后经广德/溧阳方向到溧阳；天目湖开放岸线短走，17:00前确认床车停车。','stay':'溧阳 · 车宿④','path':['xuancheng','liyang'],'title':'留一天给湖边','charging':'出宣城前补到80%-90%，溧阳次晨检查SOC。','food':'宣城早餐，溧阳家常菜。','scenic':['天目湖']}, {'route':'溧阳 → 常州','distance':'70-100 km / 1-2 h','schedule':'08:30早餐后返常州，上午至中午到家；路上留出休息空间。','stay':'回常州','path':['liyang','changzhou'],'title':'轻松回到常州','charging':'短途返程，按预测到达电量留20%。','food':'常州午餐。','scenic':[]}]),
+ dict(id='anhui',name='安徽',en='ANHUI',title='从桃花潭，走进徽州',subtitle='泾县、桃花潭、卢村观景台、西溪南、呈坎一路串联，回程在广德市区落脚。推荐6天。',color='#277c68',tag='古村山水 · 推荐6天',km='900-1100',budget='2200-4200',hotel='10月4日 · 黄山徽州区岩寺',hotelCost='350-700元 / 间',daily=2,visits=3,sleep=4,backup=5,
+   paths=[['changzhou','jingxian'],['jingxian','taohuatan','lucun','yixian'],['yixian','xixinan','yansi'],['yansi','chengkan','guangde'],['guangde','changzhou']],
+   dayTitles=['先到泾县，江边休息','桃花潭与卢村观景台','西溪南，下午酒店休整','呈坎古村，北返广德','从广德市区回常州'],
+   charging=['泾县午餐快充，补到85%-90%；夜宿用电另留余量。','泾县出发≥80%，进山区不依赖单桩；黟县县城晚餐快充。','岩寺酒店附近找多枪快充站，北返前补到85%-90%。','岩寺出发85%-90%；北返途中以预测到站≥20%选备站，广德晚餐补能。','广德按实时导航核电量，预计到家留20%；短途也不跳过检查。'],
+   meals=['泾县面条/锅贴配蛋，晚餐炖菜、时蔬；备次日早餐。','桃花潭镇家常午餐，黟县晚餐徽菜；臭鳜鱼按口味少量点。','西溪南外围午餐；岩寺晚餐面食、毛豆腐或家常菜，酒店洗衣。','呈坎游后先吃午餐再转场；广德市区炖菜/面食，困倦不饮酒。','广德早餐，途中简单午餐或回常州吃；不为网红店绕远。'],
+   scenic=[['青弋江泾县步道'],['泾县桃花潭景区','黟县卢村观景平台'],['黄山市西溪南古村落'],['黄山市呈坎景区','广德市区'],['广德市区']],
+   warning='5天版第4日呈坎后仍有较长转场，单驾驶员优先6天。卢村指黟县观景台，不是广德卢村镇；车宿回县城/城区并核实过夜许可。',
+   extra=[{'route':'岩寺 → 呈坎 → 岩寺','distance':'40-70 km / 1-1.5 h','schedule':'08:00早餐后出发；08:30-11:30呈坎；午餐后回岩寺，14:00-15:00午休，傍晚只在城区短走，落实车宿。不必为了鱼灯再走夜间山路。','stay':'徽州区岩寺 · 车宿③','path':['yansi','chengkan','yansi'],'title':'呈坎慢游，不赶长途','charging':'岩寺晚餐时补到85%-90%，次日转场广德。','food':'呈坎午餐；岩寺晚餐家常菜。','scenic':['黄山市呈坎景区']}, {'route':'岩寺 → 广德市区','distance':'240-290 km / 3.5-4.5 h','schedule':'08:30出发，以实时导航推荐的高速/主干道北返；每90-120分钟休息；途中午餐、按需快充，约15:00-16:30到广德市区，短走后晚餐、车宿。','stay':'广德市区 · 车宿④','path':['yansi','guangde'],'title':'分段北返，在广德歇脚','charging':'岩寺85%-90%出发；沿途预测到站不足20%提前补；广德为次晨返程备电。','food':'途中午餐，广德市区炖菜/时蔬。','scenic':['广德市区']}, {'route':'广德市区 → 常州','distance':'130-170 km / 2-3 h','schedule':'08:00早餐，09:00前出发；途中休息，预计12:00-14:00回常州，国庆堵车另留余量。不等免费截止才返程。','stay':'回常州','path':['guangde','changzhou'],'title':'轻松回到常州','charging':'按到家预测留20%，必要时途中短补。','food':'广德早餐，常州午餐。','scenic':[]}]),
  dict(id='shandong',name='山东',en='SHANDONG',title='沿海岸，去听海风',subtitle='连云港歇脚，日照看沙滩与森林，青岛西海岸留给一整段慢时光。',color='#2a7199',tag='看海优先 · 推荐6天',km='1300-1550',budget='2050-4500',hotel='10月4日 · 青岛西海岸',hotelCost='350-750元 / 间',daily=6,visits=7,sleep=None,backup=8,
    paths=[['changzhou','huaian','lianyungang'],['lianyungang','rizhao'],['rizhao','huangdao'],['huangdao','rizhao','lianyungang'],['lianyungang','huaian','changzhou']],
    dayTitles=['先到连云港歇脚','日照，海滩与森林','住进西海岸','看一眼海，再南返','分段回到常州'],
@@ -71,13 +77,13 @@ for cfg in cfgs:
     for i,row in enumerate(tables[cfg['daily']][1:]):
         route,_,dist=row[1].partition('\n')
         days.append(dict(day_number=i+1,date=f'2026-10-{i+2:02}',title=cfg['dayTitles'][i],route=route,distance=dist,schedule=row[2],stay=row[3].replace('\n',' · '),path=cfg['paths'][i],charging=cfg['charging'][i],food=cfg['meals'][i],scenic=cfg['scenic'][i]))
-    six=copy.deepcopy(days[:3] if cfg['id']=='shandong' else days[:4])
+    six=copy.deepcopy(days[:3] if cfg['id'] in ['anhui','shandong'] else days[:4])
     for ext in cfg['extra']:
         d=copy.deepcopy(ext);d['day_number']=len(six)+1;d['date']=f"2026-10-{len(six)+2:02}";six.append(d)
     result={k:cfg[k] for k in ['id','name','en','title','subtitle','color','tag','km','budget','hotel','hotelCost','warning']}
     result.update(variants={'5':days,'6':six},visits=tables[cfg['visits']],sleep=tables[cfg['sleep']] if cfg['sleep'] is not None else [],alternatives=tables[cfg['backup']])
     trips.append(result)
-payload=dict(schemaVersion=1,updated='2026-09-20',coordinatesNote='WGS84城市/镇区示意锚点，不是景区入口、充电站或已获准夜宿的精确位置。实际导航按地点名称搜索。',anchors=anchors,trips=trips,packing=tables[13],budget=tables[14],checkpoints=tables[15],rules=tables[1],sources=sources)
+payload=dict(schemaVersion=1,updated='2026-09-20',revision='anhui-required-stops-v2',coordinatesNote='WGS84城市/镇区/村域锚点，不是景区入口、充电站或已获准夜宿的精确位置；卢村仅为村域附近锚点，观景台停车请按完整地点名称核实。实际导航按地点名称搜索。',anchors=anchors,trips=trips,packing=tables[13],budget=tables[14],checkpoints=tables[15],rules=tables[1],sources=sources)
 (ROOT/'data').mkdir(exist_ok=True)
 (ROOT/'data/trips.json').write_text(json.dumps(payload,ensure_ascii=False,indent=2),encoding='utf-8')
 
