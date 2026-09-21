@@ -29,6 +29,12 @@ Map tiles and external map/search links contact their respective third parties.
 
 ## Current interactive edition (2026-09-21)
 
+Daily accordion/map interaction revision: re-inspected upstream
+`client/src/pages/SharedTripPage.tsx` and `sharedTrip/useSharedTrip.ts` on
+2026-09-21. The expanded day and map selection share one selected-day state,
+with all-trip fallback and ordered day stops. The static Leaflet controller
+`itinerary-map.mjs` is a local implementation, not the TREK backend.
+
 The current UI reads `data/plan.json`, generated from `data/plan.mjs` by the build.
 Legacy `data/trips.json`, TREK snapshots and `report.pdf` are retained as historical
 artifacts, not the current itinerary. No reservations have been made by this site.
