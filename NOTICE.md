@@ -65,3 +65,11 @@ Anhui revision: Xixinan, Chengkan, Lucun village (not the exact viewpoint parkin
 Yansi, Biyang and Tongrui-area anchors were checked using OpenStreetMap Nominatim
 on 2026-09-20. Data © OpenStreetMap contributors, ODbL 1.0. Lu village in Yixian
 is distinct from Lucun town in Guangde. Search/navigation uses explicit place names.
+Map update (2026-09-21): AMap JS API 2.0 is the primary basemap. The SDK's logo,
+copyright and map approval notices remain visible. JS API Key and securityJsCode
+are public by the website owner's explicit authorization; domain restrictions do
+not make them secret. AMap service: https://lbs.amap.com/api/javascript-api-v2/guide/abc/jscode
+Existing WGS84 route display coordinates are converted through official AMap.convertFrom
+at build time and cached as GCJ-02 in data/amap-coordinates.json. Road display uses
+approximately 15 m simplification and is not turn-by-turn or real-time navigation.
+OpenStreetMap/Leaflet remain the explicit fallback if AMap cannot load.

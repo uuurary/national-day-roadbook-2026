@@ -3,7 +3,7 @@ const assert=require('node:assert/strict'),fs=require('node:fs'),path=require('n
 const url=process.env.BASE_URL||'http://127.0.0.1:4173/';
 const out=path.resolve('qa/current');fs.mkdirSync(out,{recursive:true});
 const results=[];const ok=message=>{results.push(message);console.log('PASS '+message);};let browser;
-(async()=>{browser=await chromium.launch({headless:true,channel:'chrome'});const context=await browser.newContext({viewport:{width:1440,height:1000}});const page=await context.newPage(),errors=[];page.on('pageerror',e=>errors.push(e.message));
+(async()=>{browser=await chromium.launch({headless:true,channel:'chrome'});const context=await browser.newContext({viewport:{width:1440,height:1000}});await context.route('**/map-config.json',r=>r.fulfill({json:{provider:'osm'}}));const page=await context.newPage(),errors=[];page.on('pageerror',e=>errors.push(e.message));
 await page.route('https://api.open-meteo.com/**',r=>r.fulfill({json:{daily:{time:['2026-10-02','2026-10-03','2026-10-04'],temperature_2m_min:[15,16,17],temperature_2m_max:[23,24,25],weather_code:[61,3,0],precipitation_probability_max:[75,20,10],wind_speed_10m_max:[15,12,10]}}}));
 await page.goto(url,{waitUntil:'domcontentloaded'});await page.locator('.day-tab').first().waitFor();await page.clock.setFixedTime(new Date('2026-09-21T04:00:00Z'));
 await page.locator('#refresh-weather').click();await page.waitForFunction(()=>!document.querySelector('#refresh-weather').disabled);

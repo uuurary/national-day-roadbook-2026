@@ -1,0 +1,37 @@
+const {chromium}=require(process.env.PLAYWRIGHT_MODULE||'playwright');
+const assert=require('node:assert/strict'),fs=require('node:fs'),path=require('node:path');
+const base=process.env.BASE_URL||'http://127.0.0.1:4173/';let browser;
+const results=[],pass=s=>{results.push(s);console.log('PASS '+s);};
+(async()=>{
+ browser=await chromium.launch({channel:'chrome',headless:true});
+ const context=await browser.newContext({viewport:{width:1440,height:1000},reducedMotion:'reduce'}),page=await context.newPage();
+ // Pre-publication test: local build at the real owned Pages origin, without relaxing domain limits.
+ if(process.env.LOCAL_SITE==='1')await context.route(base+'**',r=>{const relative=decodeURIComponent(new URL(r.request().url()).pathname.slice(new URL(base).pathname.length))||'index.html',root=path.resolve(__dirname,'..'),file=path.resolve(root,relative);if(!file.startsWith(root+path.sep))return r.fulfill({status:403});const types={'.js':'text/javascript','.mjs':'text/javascript','.json':'application/json','.html':'text/html','.css':'text/css','.jpg':'image/jpeg','.png':'image/png','.svg':'image/svg+xml'};return r.fulfill({body:fs.readFileSync(file),contentType:types[path.extname(file)]||'application/octet-stream'});});
+ await context.route('https://api.open-meteo.com/**',r=>r.abort());
+ let coordinateRequests=0;page.on('request',r=>{if(r.url().includes('/coordinate/convert'))coordinateRequests++;});
+ await page.goto(base+'?route=anhui&dates=2-7&day=0');
+ await page.waitForFunction(()=>document.querySelector('#day-map')?.dataset.provider==='osm'||(document.querySelector('#day-map')?.dataset.tilesReady==='true'&&document.querySelector('#day-map')?.dataset.geometryReady==='true'),{},{timeout:120000});
+ assert.equal(await page.locator('#day-map').getAttribute('data-provider'),'amap',await page.locator('#day-map-state').innerText());
+ assert.equal(await page.locator('#day-map').getAttribute('data-coordinate-system'),'GCJ-02');
+ assert.equal(await page.locator('#day-map').getAttribute('data-stops'),'changzhou,jingxian');
+ assert.ok(await page.locator('#day-map canvas').count()>0);pass('real AMap SDK, tiles and converted cached road load');
+ await page.locator('[data-day="3"]').click();
+ await page.waitForFunction(()=>document.querySelector('#day-map').dataset.selection==='3'&&document.querySelector('#day-map').dataset.geometryReady==='true',{},{timeout:120000});
+ const zoom=Number(await page.locator('#day-map').getAttribute('data-zoom'));
+ assert.equal(await page.locator('#day-map').getAttribute('data-stops'),'yansi,chengkan');
+ await page.locator('[data-day="3"]').scrollIntoViewIfNeeded();await page.screenshot({path:'qa/current/amap-desktop.png'});
+ await page.locator('[data-map-scope="all"]').click();await page.waitForFunction(()=>document.querySelector('#day-map').dataset.selection==='all',{},{timeout:120000});
+ assert.ok(Number(await page.locator('#day-map').getAttribute('data-zoom'))<zoom);pass('selected day and full route use different AMap bounds');
+ await page.setViewportSize({width:375,height:812});await page.locator('[data-map-scope="day"]').click();
+ await page.waitForFunction(()=>document.querySelector('#day-map').dataset.selection==='3');
+ assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth));assert.ok(await page.locator('#day-map').evaluate(e=>!!e.closest('.day-card.is-open')));
+ await page.locator('#day-map-panel').scrollIntoViewIfNeeded();await page.screenshot({path:'qa/current/amap-mobile.png'});pass('375px mobile AMap moves into expanded day without overflow');
+ for(const route of ['anhui','zhejiang']){await page.locator(`[data-route="${route}"]`).click();for(const dates of ['2-7','2-6','3-7']){await page.selectOption('#date-select',dates);for(let i=0;i<(dates==='2-7'?6:5);i++){const button=page.locator(`[data-day="${i}"]`);if(await button.getAttribute('aria-expanded')!=='true')await button.click();await page.waitForFunction(i=>document.querySelector('#day-map')?.dataset.provider==='amap'&&document.querySelector('#day-map')?.dataset.selection===String(i),i);assert.equal(await page.locator('#day-map').getAttribute('data-coordinate-system'),'GCJ-02');}}}pass('all 32 dated days display on AMap with converted coordinates');
+ assert.equal(coordinateRequests,0);pass('visitor makes zero coordinate-conversion API requests');
+ const failure=await context.newPage();await failure.route('https://webapi.amap.com/**',r=>r.abort());await failure.goto(base+'?route=anhui&dates=2-7&day=0');
+ await failure.waitForFunction(()=>document.querySelector('#day-map')?.dataset.provider==='osm');
+ await failure.locator('[data-day="2"]').click();await failure.waitForFunction(()=>document.querySelector('#day-map').dataset.selection==='2');
+ assert.match(await failure.locator('#day-map-state').innerText(),/回退 OpenStreetMap/);assert.ok(await failure.locator('.timeline').isVisible());pass('AMap failure falls back to OSM and preserves daily navigation');
+ const missing=await context.newPage();await missing.route('**/data/amap-coordinates.json',r=>r.abort());await missing.goto(base+'?route=anhui&dates=2-7&day=0');await missing.waitForFunction(()=>document.querySelector('#day-map')?.dataset.provider==='osm');assert.ok(await missing.locator('.timeline').isVisible());pass('coordinate cache failure does not draw unconverted data on AMap');
+ fs.writeFileSync('qa/current/amap-results.json',JSON.stringify({testedAt:new Date().toISOString(),base,results},null,2));await browser.close();
+})().catch(async e=>{console.error(e.name+': '+e.message.replace(/[a-f0-9]{32}/gi,'[redacted]').split('\n')[0]);await browser?.close();process.exitCode=1;});
