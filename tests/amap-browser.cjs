@@ -19,6 +19,8 @@ const results=[],pass=s=>{results.push(s);console.log('PASS '+s);};
  await page.waitForFunction(()=>document.querySelector('#day-map').dataset.selection==='3'&&document.querySelector('#day-map').dataset.geometryReady==='true',{},{timeout:120000});
  const zoom=Number(await page.locator('#day-map').getAttribute('data-zoom'));
  assert.equal(await page.locator('#day-map').getAttribute('data-stops'),'yansi,chengkan');
+ assert.equal(await page.locator('#map').getAttribute('data-selection'),'all');
+ assert.match(await page.locator('#map').getAttribute('data-stops'),/changzhou.*jingxian.*guangde/);
  await page.locator('[data-day="3"]').scrollIntoViewIfNeeded();await page.screenshot({path:'qa/current/amap-desktop.png'});
  await page.locator('[data-map-scope="all"]').click();await page.waitForFunction(()=>document.querySelector('#day-map').dataset.selection==='all',{},{timeout:120000});
  assert.ok(Number(await page.locator('#day-map').getAttribute('data-zoom'))<zoom);pass('selected day and full route use different AMap bounds');

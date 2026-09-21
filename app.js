@@ -62,6 +62,7 @@ function getRouteCache(){
 }
 function initMap(){
  map=createTravelMap($('#map'),$('#map-state'),getRouteCache);
+ map.show(data.anchors,current.days,null);
  dayMap=createTravelMap($('#day-map'),$('#day-map-state'),getRouteCache);
  updateDayMaps();
 }
@@ -77,8 +78,7 @@ function updateDayMaps(){
  $('#day-map-title').textContent=selected===null?'全程路线总览':`第 ${state.day+1} 天 · ${d.date.slice(5).replace('-','/')} · 当天区段`;
  for(const button of document.querySelectorAll('[data-map-scope]')){button.setAttribute('aria-pressed',String(button.dataset.mapScope===(selected===null?'all':'day')));button.disabled=button.dataset.mapScope==='day'&&!dayOpen;}
  $('#day-map-links').innerHTML=(selected===null?[]:dailyMapPlaces(d)).map(name=>link(mapURL(name),name.replace(/安徽省|浙江省|黄山市|杭州市|丽水市/g,''))).join('');
- $('#map').previousElementSibling.textContent=selected===null?'全程路线地图':'第 '+(state.day+1)+' 天路线地图';
- map?.show(data.anchors,current.days,selected);
+ $('#map').previousElementSibling.textContent='全程路线预览';
  dayMap?.show(data.anchors,current.days,selected);
 }
 compactMap.addEventListener('change',placeDayMap);
