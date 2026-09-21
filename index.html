@@ -1,28 +1,3 @@
 <!doctype html>
-<html lang="zh-CN">
-<head>
-  <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-  <meta name="theme-color" content="#233e34">
-  <meta name="description" content="2026国庆常州出发：安徽、山东、浙江三条纯电床车路线，逐日行程、地图、补能与行李清单。">
-  <title>山水路书 · 2026国庆</title>
-  <link rel="icon" href="./favicon.svg" type="image/svg+xml">
-  <link rel="stylesheet" href="./vendor/leaflet.css"><link rel="stylesheet" href="./style.css">
-  <script defer src="./vendor/leaflet.js"></script><script type="module" src="./app.js"></script>
-</head>
-<body>
-<a class="skip" href="#content">跳到行程</a>
-<header class="topbar"><a class="brand" href="./"><span class="brand-mark">山</span><span>山水路书<small>A LITTLE FURTHER</small></span></a><div class="header-note">常州出发 · 2026 国庆</div><a class="button ghost" href="./report.pdf" download>下载完整 PDF ↗</a></header>
-<main id="content">
-  <section class="intro"><div><div class="eyebrow">OCTOBER 02 — 06 / 07, 2026</div><h1>把假期，交给山水。</h1><p>一辆电车，两个人。一晚酒店，其余睡在风景旁。</p></div><div class="trip-facts"><span><b>450</b>km 实际续航</span><span><b>3</b>条独立路线</span><span><b>1</b>位驾驶员</span></div></section>
-  <nav id="trip-tabs" aria-label="选择旅行方向"></nav>
-  <section id="trip-hero" class="trip-hero" aria-live="polite"></section>
-  <div class="toolbar"><div class="section-tabs" role="tablist" aria-label="行程内容"><button role="tab" id="tab-plan" aria-selected="true" aria-controls="panel-plan" data-tab="plan">路线与日程</button><button role="tab" id="tab-prepare" aria-selected="false" aria-controls="panel-prepare" data-tab="prepare">轻装清单</button><button role="tab" id="tab-backup" aria-selected="false" aria-controls="panel-backup" data-tab="backup">备选与预算</button></div><div class="duration" aria-label="选择返程日期"><button data-duration="5" aria-pressed="true">6日回 · 5天</button><button data-duration="6" aria-pressed="false">7日回 · 6天</button></div></div>
-  <section id="panel-plan" role="tabpanel" aria-labelledby="tab-plan"><div class="plan-grid"><div class="itinerary"><div class="list-heading"><h2>每日一程</h2><button id="all-days" class="text-button">看全程 ↗</button></div><div id="days"></div></div><aside class="map-column"><div class="map-card"><div class="map-head"><div><span class="eyebrow">ON THE MAP</span><h2 id="map-title">全程路线</h2></div><button id="fit-map" class="button small">回到全景</button></div><div id="map" aria-label="路线交互地图"></div><div class="map-foot"><span class="line-key"></span><span id="map-status">正在载入路线…</span></div><div id="anchor-list"></div><p class="caption">地图点为城市/镇区锚点；景区入口、充电站与夜宿许可需按名称另行核实。底图需联网，文字日程始终可读。</p></div><div id="overnight" class="overnight"></div></aside></div><div id="rules" class="rules"></div></section>
-  <section id="panel-prepare" role="tabpanel" aria-labelledby="tab-prepare" hidden><div class="panel-heading"><div><span class="eyebrow">PACK LESS, REST BETTER</span><h2>轻装，给睡眠留出空间。</h2><p>勾选仅保存在这台设备的浏览器；不同设备不会同步。</p></div><div id="packing-progress" class="packing-progress"></div></div><div id="packing"></div><div class="local-note"><label for="personal-note">我的临行备忘（只保存在本机）</label><textarea id="personal-note" rows="4" placeholder="例如：营地电话、确认停车的时间、备用快充站…"></textarea><span id="save-state" role="status"></span></div></section>
-  <section id="panel-backup" role="tabpanel" aria-labelledby="tab-backup" hidden><div class="panel-heading"><div><span class="eyebrow">ROOM FOR CHANGE</span><h2>天气会变，路线可以跟着变。</h2><p>多留一点空白，让旅程从容一些。</p></div></div><div id="alternatives"></div><div id="budget"></div><div id="visits"></div><div id="checkpoints"></div></section>
-  <details class="sources"><summary>资料来源、地图说明与项目代码</summary><div id="sources"></div><p>本页面将 TREK 公开分享页的行程数据组织方式适配为静态路书，不是原版 TREK 实例；不提供账户、数据库或多人同步。清单/备忘只写入本机浏览器。未预订任何酒店或营地。</p><p><a href="https://github.com/liketrek/TREK" target="_blank" rel="noopener">上游 TREK</a> · <a id="source-link" href="./README.md">本项目源码 / README</a> · <a href="./LICENSE">AGPL-3.0</a> · <a id="snapshot-link" href="./data/anhui-5-trek-snapshot.json" download>分享数据快照 JSON</a></p></details>
-</main>
-<footer><span>山水路书 / 2026</span><span>行程核查 2026-09-20 · 里程为规划估算</span><span>托管目标：GitHub Pages</span></footer>
-<div id="toast" role="status"></div>
-<noscript><div class="fatal">请启用 JavaScript 查看交互路线，或<a href="./report.pdf">下载完整 PDF</a>。</div></noscript>
-</body></html>
+<html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"><meta name="theme-color" content="#254c3c"><meta name="description" content="常州出发，两人一车，2026国庆皖南与浙江自驾路书。每日时间轴、天气、预算与轻装清单。"><title>2026国庆出游计划</title><link rel="icon" href="favicon.svg"><link rel="stylesheet" href="vendor/leaflet.css"><link rel="stylesheet" href="style.css"><script src="vendor/leaflet.js" defer></script><script src="app.js" type="module"></script></head>
+<body><a class="skip" href="#main">跳转到行程内容</a><header class="masthead"><a class="brand" href="#overview"><span class="brand-mark" aria-hidden="true">山</span><span>2026 国庆出游计划<small>从常州出发 · 把假期留给山水</small></span></a><span class="edition">两个人 / 一辆电车</span></header><main id="main" tabindex="-1"><div class="loading" role="status">正在整理你的山水路书…</div></main><nav class="main-nav" aria-label="页面导航"><a href="#overview">路线总览</a><a href="#daily">每日行程</a><a href="#weather">天气穿搭</a><a href="#packing">行李清单</a><a href="#checks">行前检查</a></nav><footer><p>两个人，一位司机。留出午休，也留出改变计划的空间。</p><p><a href="https://github.com/uuurary/national-day-roadbook-2026" target="_blank" rel="noopener">GitHub 源码</a> · <a href="NOTICE.md" target="_blank" rel="noopener">来源与许可</a> · 静态路书，非 TREK 官方服务</p></footer><div id="live-status" class="sr-only" role="status" aria-live="polite"></div><noscript><p class="notice">请启用 JavaScript 使用互动功能。可查看 <a href="data/plan.json">行程数据</a>。</p></noscript></body></html>

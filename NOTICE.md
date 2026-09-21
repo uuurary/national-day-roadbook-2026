@@ -27,6 +27,34 @@ corresponding source is the GitHub repository linked in the page footer.
 Personal checklist and notes are stored only in localStorage, not uploaded.
 Map tiles and external map/search links contact their respective third parties.
 
+## Current interactive edition (2026-09-21)
+
+The current UI reads `data/plan.json`, generated from `data/plan.mjs` by the build.
+Legacy `data/trips.json`, TREK snapshots and `report.pdf` are retained as historical
+artifacts, not the current itinerary. No reservations have been made by this site.
+
+Weather: Open-Meteo, https://open-meteo.com/ , CC BY 4.0 weather data attribution.
+The browser submits public destination coordinates only. The displayed timestamp
+is retrieval time, not model publication time. Missing dates are never extrapolated.
+https://creativecommons.org/licenses/by/4.0/
+
+Photos: Wikimedia Commons, chosen license CC BY-SA 4.0. Local JPEGs are unchanged
+downloads (or Wikimedia-generated thumbnails); CSS uses a responsive display crop.
+Both photographs are historical, not live conditions. Photographer, original page
+and license are linked beside each displayed image. Photo reuse/crops remain under
+CC BY-SA 4.0, separate from the software AGPL license.
+
+- `assets/chengkan.jpg`: TIY, 2023-05-16, Chengkan Village,
+  https://commons.wikimedia.org/wiki/File:%E5%91%88%E5%9D%8E.jpg
+- `assets/xiandu.jpg`: Zhangzhugang, 2017-09-10, Dinghu Peak and Shiliang Bridge,
+  https://commons.wikimedia.org/wiki/File:Jinyun_Xiandu_2017.09.10_06-47-19.jpg
+- License: https://creativecommons.org/licenses/by-sa/4.0/
+
+New checklist key: `national-day-2026-v2`. Checklist IDs are semantic and stable
+across routes. Each traveler's personal items are independent. Old notes under
+`roadbook-2026-note` are read if the new note is empty; legacy checklist storage is
+not deleted or silently reinterpreted. No account, backend, tracking or device sync.
+
 Anhui revision: Xixinan, Chengkan, Lucun village (not the exact viewpoint parking),
 Yansi, Biyang and Tongrui-area anchors were checked using OpenStreetMap Nominatim
 on 2026-09-20. Data © OpenStreetMap contributors, ODbL 1.0. Lu village in Yixian
