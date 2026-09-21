@@ -35,3 +35,22 @@ packing:[
 };
 Object.assign(plan.routes[0],{imageAlt:'呈坎古村、石桥与水岸，2023 年历史实景照片',imageCredit:'呈坎古村 · 2023 年',imageSource:'https://commons.wikimedia.org/wiki/File:%E5%91%88%E5%9D%8E.jpg',imageAuthor:'TIY'});
 plan.routes[1].imageAuthor='Zhangzhugang';
+
+// Planning bands, not live navigation. Include local driving; no straight-line mileage.
+const mileage={anhui:{5:[[250,280],[145,165],[60,80],[215,245],[165,190]],6:[[250,280],[145,165],[60,80],[30,50],[185,210],[165,190]]},zhejiang:{5:[[285,315],[50,80],[185,215],[200,240],[285,315]],6:[[285,315],[240,300],[40,70],[130,180],[185,215],[285,315]]}};
+for(const route of plan.routes)for(const length of [5,6]){
+ route.variants[length]=route.variants[length].map((d,i)=>({...d,distanceKm:mileage[route.id][length][i],distanceNote:route.id==='zhejiang'&&length===6&&[1,2,3].includes(i)?'该日含未缓存的市内/跨县支线，按区域路线预留的粗估范围；须出发前用高德实际入口重算。':'基于已有 OSRM 城际道路缓存，另留市内吃饭、充电和停车绕行；本地游览日含往返。并非高德实测或实时路况。'}));
+}
+for(const length of [5,6]){
+ const d=plan.routes[0].variants[length][0];
+ d.title='抵达泾县，水西或老街二选一';
+ d.drive='3–4 h；选水西约 3.5–4.5 h';
+ d.timeline=d.timeline.map(e=>e.place==='泾县县城老街'?E('14:00–16:00','水西景区低处 / 县城老街（二选一）','优先备选水西：县城往返各预留 20–30 min，低处外观约 60 min；先核实开放入口，不登塔、不走陡坡。堵车或疲劳改县城老街短走。均为规划耗时。','core'):e);
+ d.photo='水西低处看古塔与林木，下午柔光随手拍；不登塔、不追高处机位。若选老街，15:00–16:00 慢拍，不耽误补电。';
+ d.booking='水西低处开放范围、停车与收费、预约要求均待核实（查询 2026-09-21）；不能据官方景点介绍认定免费或全天开放。宣纸文化园另核国庆场次和售票截止。车宿许可、厕所夜间开放另确认。';
+ d.planB='晚于 12:00 抵达或当天实驾接近 4 h，就取消水西，只保留吃饭、90 min 午休和县城短走；雨大、路滑或关闭不前往林地。宣纸文化园仅在提前核实开放、往返路况可接受且司机不疲劳时替换下午安排，不与水西叠加。无法获准车宿就住县城酒店。';
+ d.alternatives=[{name:'水西景区 / 水西双塔 · 优先备选',place:'安徽省泾县水西双塔',note:'14:00 出发，约 14:30–15:30 在获准开放的低处看古塔与林木，16:00 前回县城。县城往返暂估 10–25 km、40–60 min，已预留在当天 250–280 km 范围内；入口与停车选定后重算。现场坡度不合适就折返。',source:'https://www.ahjx.gov.cn/About/show/1695727.html'},{name:'宣纸文化园 · 人文替换项',place:'安徽省泾县宣纸文化园',note:'偏爱非遗时用其替换水西/老街。建议参观 1.5–2 h，县城往返暂按 70–100 km、1.5–2 h 预留，全天约 320–360 km、实驾约 4.5–6 h：超出舒适驾驶目标，不作默认安排。出发前须重算路程并核实末场入园；园区不全是室内，暴雨不建议绕行。',source:'https://www.ahjx.gov.cn/About/show/33534.html'}];
+ d.extraBudget='当天表格是县城基础安排。水西若收费、宣纸文化园门票/体验及额外充电停车均另计，票价待核实；没有将备选景点假定为免费。';
+}
+plan.sources.push(['泾川镇景点介绍（2026）','https://www.ahjx.gov.cn/About/show/1695727.html','官方确认水西景区、水西双塔等景点；不提供本次国庆开放、票价或预约承诺。'],['宣纸文化园 · 泾县文旅局','https://www.ahjx.gov.cn/About/show/33534.html','官方介绍宣纸博物馆与技艺展示；2026 国庆具体开放、票务、体验场次待核实。']);
+plan.version='2026-09-21-v3';
