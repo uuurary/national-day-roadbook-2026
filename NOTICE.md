@@ -73,3 +73,9 @@ Existing WGS84 route display coordinates are converted through official AMap.con
 at build time and cached as GCJ-02 in data/amap-coordinates.json. Road display uses
 approximately 15 m simplification and is not turn-by-turn or real-time navigation.
 OpenStreetMap/Leaflet remain the explicit fallback if AMap cannot load.
+Gallery additions (2026-09-21), all CC BY-SA 4.0, displayed with responsive crops:
+- Taohuatan: Zhangzhugang, 2017, https://commons.wikimedia.org/wiki/File:Jingxian_Taohuatan_2017.08.19_07-36-27.jpg
+- Xidi: Zhangzhugang, 2016, https://commons.wikimedia.org/wiki/File:Yixian_Xidi_2016.09.10_16-08-34.jpg
+- Fuchun River: Jucember, 2011, https://commons.wikimedia.org/wiki/File:Fuchun_River.jpg
+License: https://creativecommons.org/licenses/by-sa/4.0/
+These historical photos do not represent current weather or opening conditions.

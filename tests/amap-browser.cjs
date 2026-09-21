@@ -15,6 +15,7 @@ const results=[],pass=s=>{results.push(s);console.log('PASS '+s);};
  assert.equal(await page.locator('#day-map').getAttribute('data-coordinate-system'),'GCJ-02');
  assert.equal(await page.locator('#day-map').getAttribute('data-stops'),'changzhou,jingxian');
  assert.ok(await page.locator('#day-map canvas').count()>0);pass('real AMap SDK, tiles and converted cached road load');
+ for(const target of ['overview','day']){const id=target==='overview'?'#map':'#day-map';const z=Number(await page.locator(id).getAttribute('data-zoom'));await page.locator('[data-map-target="'+target+'"][data-map-zoom="1"]').click();assert.equal(Number(await page.locator(id).getAttribute('data-zoom')),z+1);await page.locator('[data-map-target="'+target+'"][data-map-zoom="-1"]').click();assert.equal(Number(await page.locator(id).getAttribute('data-zoom')),z);await page.locator('[data-map-target="'+target+'"][data-map-zoom="reset"]').click();}pass('both real AMap zoom buttons change zoom and reset bounds');
  await page.locator('[data-day="3"]').click();
  await page.waitForFunction(()=>document.querySelector('#day-map').dataset.selection==='3'&&document.querySelector('#day-map').dataset.geometryReady==='true',{},{timeout:120000});
  const zoom=Number(await page.locator('#day-map').getAttribute('data-zoom'));

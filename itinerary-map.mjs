@@ -12,7 +12,7 @@ export function mapModel(anchors,days,index,cache){
 export function createItineraryMap(mount,status,getCache){
  const L=window.L;
  if(!L){status.textContent='地图组件加载失败；下方地点导航链接仍可使用。';return {show(){},resize(){},destroy(){}};}
- const map=L.map(mount,{scrollWheelZoom:false,zoomAnimation:false,fadeAnimation:false});
+ const map=L.map(mount,{scrollWheelZoom:false,zoomControl:false,zoomAnimation:false,fadeAnimation:false});
  const layers=L.layerGroup().addTo(map);let disposed=false,revision=0,tileFailed=false,roadFailed=false,model;
  function message(){if(disposed)return;const base=tileFailed?'部分底图加载失败；可使用地点导航链接。':roadFailed?'道路数据加载失败；虚线仅示意，不代表实际道路。':'实线：缓存道路 · 虚线：方向示意 · 无实时路况';status.textContent=base+(model?.stops.length===1?' 本日仅有县域参考点，市内景点请用名称导航。':'');}
  L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:18,attribution:'© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'}).on('tileerror',()=>{tileFailed=true;message();}).on('load',message).addTo(map);
@@ -23,6 +23,8 @@ export function createItineraryMap(mount,status,getCache){
  return {
   async show(anchors,days,index){const run=++revision;roadFailed=false;draw(mapModel(anchors,days,index,null));try{const cache=await getCache();if(disposed||run!==revision)return;draw(mapModel(anchors,days,index,cache));}catch{if(disposed||run!==revision)return;roadFailed=true;message();}},
   resize(){if(!disposed)fit();},
+  zoomBy(delta){if(disposed||!model)return false;map.setZoom(Math.max(3,Math.min(18,map.getZoom()+delta)),{animate:false});recordView();return true;},
+  resetView(){if(disposed||!model)return false;fit();return true;},
   destroy(){disposed=true;revision++;map.remove();}
  };
 }

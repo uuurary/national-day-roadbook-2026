@@ -6,3 +6,13 @@
 @media(prefers-reduced-motion:reduce){*{scroll-behavior:auto!important;transition:none!important}}@media print{.main-nav,.controls,.hero-media,#map,#day-map-rail,#day-map-panel,.sources{display:none}main{max-width:none;padding:0}.hero,.stats,.panel{break-inside:avoid}.hero{display:block}.day-layout,.overview-grid,.daily-workspace{display:block}footer{padding:20px}.section{margin-top:20px}}
 .route-spine{font-size:19px;line-height:1.9;margin:18px 0;color:var(--green)}.route-mileage{font-size:22px;font-weight:600}.daily-jump{display:inline-flex;min-height:44px;align-items:center;padding:10px 18px;margin-top:14px;background:var(--green);color:#fff;border-radius:12px;text-decoration:none}.daily-jump:hover{filter:brightness(1.1)}.day-alternatives article+article{margin-top:20px;padding-top:16px;border-top:1px solid var(--line)}.day-alternatives h4{margin:0 0 10px}.distance-note{margin-top:12px}
 .amap-stop{display:grid;place-items:center;min-width:30px;height:30px;padding:0 4px;border-radius:50%;border:2px solid white;background:#254c3c;color:white;font:600 12px/1 system-ui;box-shadow:0 2px 5px #0003;white-space:nowrap}.amap-logo,.amap-copyright{visibility:visible!important;opacity:1!important}
+.hero-media.hero-gallery{display:flex;flex-direction:column;min-height:0;max-height:none}
+.gallery-stage{position:relative;display:block;width:100%;min-height:280px;flex:1;border:0;border-radius:0;padding:0;background:#cedbce;overflow:hidden}
+.hero-gallery .gallery-stage img{inset:0;width:100%;height:100%;object-fit:cover}
+.hero-gallery figcaption{position:static;background:#244c3d;padding:12px 18px;font-size:13px}
+.gallery-controls{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:8px 12px;background:#f7f5ed}
+.gallery-controls button{min-height:44px;min-width:44px;padding:8px 12px}
+.gallery-counter{white-space:nowrap;font-variant-numeric:tabular-nums}
+.map-tools{display:flex;flex-wrap:wrap;gap:8px;margin:12px 0}
+.map-tools button{min-height:44px;padding:8px 12px}
+@media(max-width:600px){.hero-gallery .gallery-stage{min-height:235px}.gallery-controls{gap:6px;padding:8px}.gallery-controls button{padding:8px 10px}}

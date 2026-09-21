@@ -4,7 +4,7 @@ import {validatePlan} from '../core.mjs';
 import {fileURLToPath} from 'node:url';
 import path from 'node:path';
 const root=path.resolve(path.dirname(fileURLToPath(import.meta.url)),'..');
-const files=['index.html','app.js','core.mjs','itinerary-map.mjs','amap-map.mjs','map-config.json','style.css','favicon.svg','LICENSE','NOTICE.md','README.md','site-config.json','.nojekyll'];
+const files=['index.html','app.js','gallery.mjs','core.mjs','itinerary-map.mjs','amap-map.mjs','map-config.json','style.css','favicon.svg','LICENSE','NOTICE.md','README.md','site-config.json','.nojekyll'];
 validatePlan(plan);
 await writeFile(path.join(root,'data','plan.json'),JSON.stringify(plan,null,2)+'\n','utf8');
 for(const f of files)await access(path.join(root,f));

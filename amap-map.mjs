@@ -1,4 +1,4 @@
-import {mapModel,createItineraryMap} from './itinerary-map.mjs';
+import {mapModel,createItineraryMap} from './itinerary-map.mjs?v=20260921-gallery-zoom';
 
 let sdkPromise,configPromise,coordinatePromise;
 function getConfig(){if(!configPromise)configPromise=fetch('map-config.json',{signal:AbortSignal.timeout(6000),cache:'no-cache'}).then(r=>{if(!r.ok)throw Error('地图配置加载失败');return r.json();});return configPromise;}
@@ -55,6 +55,8 @@ function amapController(A,mount,status,getCache,onFailure){
    const next=await convertModel(A,mapModel(anchors,days,index,cache));if(disposed||run!==revision)return;draw(next);
   }catch(error){if(!disposed&&run===revision)onFailure(error);}},
   resize(){cancelAnimationFrame(frame);frame=requestAnimationFrame(fit);},
+  zoomBy(delta){if(disposed||!model)return false;map.setZoom(Math.max(3,Math.min(18,map.getZoom()+delta)),true);record();return true;},
+  resetView(){if(disposed||!model)return false;fit();return true;},
   destroy(){disposed=true;revision++;clearTimeout(completeTimer);cancelAnimationFrame(frame);map.destroy();}
  };
 }
@@ -67,5 +69,5 @@ export function createTravelMap(mount,status,getCache){
  const statusObserver=new MutationObserver(()=>{if(reason&&!status.textContent.startsWith(reason))status.textContent=reason+' '+status.textContent;});statusObserver.observe(status,{childList:true,characterData:true,subtree:true});
  status.textContent='正在加载地图组件与底图…';
  getConfig().then(async config=>{if(disposed)return;if(config.provider!=='amap'){mount.dataset.provider='osm';controller=createItineraryMap(mount,status,getCache);}else{const A=await loadSDK(config);if(disposed)return;mount.dataset.provider='amap';controller=amapController(A,mount,status,getCache,fallback);}if(latest&&!disposed)controller.show(...latest);}).catch(fallback);
- return {show(...args){latest=args;controller?.show(...args);},resize(){controller?.resize();},destroy(){disposed=true;statusObserver.disconnect();controller?.destroy();}};
+ return {show(...args){latest=args;controller?.show(...args);},resize(){controller?.resize();},zoomBy(delta){return controller?.zoomBy?.(delta)||false;},resetView(){return controller?.resetView?.()||false;},destroy(){disposed=true;statusObserver.disconnect();controller?.destroy();}};
 }
