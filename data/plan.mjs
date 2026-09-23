@@ -1,3 +1,4 @@
+import {updateJingxian} from './jingxian-update.mjs';
 // Source of the current itinerary. Generated plan.json is the browser payload.
 const event=(time,place,note,kind='rest')=>({time,place,note,kind});
 const E=event;
@@ -70,3 +71,4 @@ for(const length of [5,6]){
  d.planB='15:30 才到观景台时选卢村短逛或直接回县城，不再加西递；选西递却晚于 15:15 离开观景台、入园时段不匹配、排队超 30 min 或司机疲劳，就撤销西递。两处古村绝不同时打卡；下雨或恐高跳过观景台。步行接近 8 km 就结束游览。6 天版可另行删减次日安排后重排西递；5 天版拥堵时优先保留必去地点和午休。';
 }
 plan.sources.push(['卢村 / 雉山村官方介绍','https://www.huangshan.gov.cn/zxzx/qxdt/8380354.html','确认卢村古桥、志诚堂木雕楼等人文内容；不是国庆营业或收费公告。'],['西递景区运营方通知','https://www.chinaxidi.com.cn/run_href.html?typeid=115','国庆开放、最后检票、夜游和预约票价待核实；不将其他节假日活动套用到本次。']);
+updateJingxian(plan);
