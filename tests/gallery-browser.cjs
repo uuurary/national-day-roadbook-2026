@@ -26,7 +26,7 @@ const assert=require('node:assert/strict');let browser;
   await page.locator('[data-map-target="'+target+'"][data-map-zoom="reset"]').click();
  }
  assert.equal(await page.locator('#map').getAttribute('data-selection'),'all');
- await page.locator('[data-day="1"]').click();assert.match(await page.locator('.day-alternatives').innerText(),/卢村或西递/);assert.equal(await page.locator('.day-alternatives article').count(),2);assert.match(await page.locator('.timeline').innerText(),/卢村风光景区/);
+ await page.locator('[data-day="1"]').click();assert.match(await page.locator('.timeline').innerText(),/宏村/);assert.match(await page.locator('.timeline').innerText(),/凫峰/);
  const reduced=await browser.newPage({reducedMotion:'reduce'});await reduced.route('**/map-config.json',r=>r.fulfill({json:{provider:'osm'}}));await reduced.goto(process.env.BASE_URL||'http://127.0.0.1:4173/');await reduced.locator('.hero-gallery').waitFor();assert.equal(await reduced.locator('.hero-gallery').getAttribute('data-playing'),'false');
  await reduced.route('**/assets/*.jpg',r=>r.abort());await reduced.getByRole('button',{name:'下一张实景',exact:true}).click();await reduced.locator('.hero-gallery.failed').waitFor();await reduced.unroute('**/assets/*.jpg');await reduced.getByRole('button',{name:'下一张实景',exact:true}).click();await reduced.waitForFunction(()=>!document.querySelector('.hero-gallery').classList.contains('failed'));
  console.log('PASS five photos, autoplay/pause/manual/keyboard, reduced motion, image failure recovery, responsive layout, both zoom controls and Day 2 choices');await browser.close();

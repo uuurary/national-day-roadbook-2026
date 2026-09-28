@@ -1,4 +1,4 @@
-import {mapModel,createItineraryMap} from './itinerary-map.mjs?v=20260921-gallery-zoom';
+import {mapModel,createItineraryMap} from './itinerary-map.mjs?v=20260928-final';
 
 let sdkPromise,configPromise,coordinatePromise;
 function getConfig(){if(!configPromise)configPromise=fetch('map-config.json',{signal:AbortSignal.timeout(6000),cache:'no-cache'}).then(r=>{if(!r.ok)throw Error('地图配置加载失败');return r.json();});return configPromise;}
@@ -24,8 +24,8 @@ export function simplifyPath(points,tolerance=.00015){
  return far>tolerance*tolerance?[...simplifyPath(points.slice(0,index+1),tolerance).slice(0,-1),...simplifyPath(points.slice(index),tolerance)]:[first,last];
 }
 async function convertPoints(A,points){
- // Official conversion is performed once at build time, never repeatedly per visitor.
- if(!coordinatePromise)coordinatePromise=fetch('data/amap-coordinates.json',{signal:AbortSignal.timeout(8000)}).then(r=>{if(!r.ok)throw Error('COORDINATE_CACHE_LOAD_ERROR');return r.json();});
+ // Cached original GCJ-02 points come from AMap; visitors do not reconvert them.
+ if(!coordinatePromise)coordinatePromise=fetch('data/amap-coordinates.json',{cache:'no-cache',signal:AbortSignal.timeout(8000)}).then(r=>{if(!r.ok)throw Error('COORDINATE_CACHE_LOAD_ERROR');return r.json();});
  const cache=await coordinatePromise;
  return points.map(p=>{const position=cache.points?.[pointKey(p)];if(!Array.isArray(position)||position.length!==2||!position.every(Number.isFinite))throw Error('COORDINATE_CACHE_MISSING');return position;});
 }

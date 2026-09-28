@@ -2,7 +2,7 @@ export function createGallery(figure,photos,initial=0){
  const abort=new AbortController(),options={signal:abort.signal},motion=matchMedia('(prefers-reduced-motion: reduce)');
  let index=initial,timer,paused=motion.matches,hovered=false,visible=true,destroyed=false;
  const image=figure.querySelector('img'),caption=figure.querySelector('figcaption'),fallback=figure.querySelector('.image-fallback');
- figure.classList.add('hero-gallery');figure.setAttribute('role','region');figure.setAttribute('aria-roledescription','轮播图');figure.setAttribute('aria-label','两条候选路线的5张历史实景');
+ figure.classList.add('hero-gallery');figure.setAttribute('role','region');figure.setAttribute('aria-roledescription','轮播图');figure.setAttribute('aria-label','皖南路线的5张历史实景');
  const stage=document.createElement('button');stage.type='button';stage.className='gallery-stage';stage.setAttribute('aria-label','点击图片，切换下一张实景');stage.append(image,fallback);figure.prepend(stage);
  const controls=document.createElement('div');controls.className='gallery-controls';
  function button(label,text,action){const node=document.createElement('button');node.type='button';node.setAttribute('aria-label',label);node.textContent=text;node.addEventListener('click',action,options);return node;}

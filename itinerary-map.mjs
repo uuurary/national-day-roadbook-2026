@@ -4,7 +4,7 @@ export function mapModel(anchors,days,index,cache){
  const paths=selected.filter(Boolean).map(d=>d.path);
  const stops=[],byKey=new Map(),segments=[],seen=new Set();let order=0;
  for(const path of paths){for(const key of path){if(!anchors[key])continue;order++;if(!byKey.has(key)){const stop={key,name:anchors[key][0],point:anchors[key].slice(1),orders:[]};byKey.set(key,stop);stops.push(stop);}byKey.get(key).orders.push(order);}
-  for(let i=1;i<path.length;i++){const a=path[i-1],b=path[i];if(a===b||!anchors[a]||!anchors[b])continue;const id=[a,b].sort().join('--');if(seen.has(id))continue;seen.add(id);const cached=cache?.segments?.[`${a}--${b}`]||cache?.segments?.[`${b}--${a}`];const coordinates=cached?.geometry?.coordinates;const valid=Array.isArray(coordinates)&&coordinates.length>1&&coordinates.every(p=>Array.isArray(p)&&Number.isFinite(p[0])&&Number.isFinite(p[1]));segments.push({cached:valid,points:valid?coordinates.map(p=>[p[1],p[0]]):[anchors[a].slice(1),anchors[b].slice(1)]});}
+  for(let i=1;i<path.length;i++){const a=path[i-1],b=path[i];if(a===b||!anchors[a]||!anchors[b])continue;const id=a+'--'+b;if(seen.has(id))continue;seen.add(id);const cached=cache?.segments?.[`${a}--${b}`];const coordinates=cached?.geometry?.coordinates;const valid=Array.isArray(coordinates)&&coordinates.length>1&&coordinates.every(p=>Array.isArray(p)&&Number.isFinite(p[0])&&Number.isFinite(p[1]));segments.push({cached:valid,points:valid?coordinates.map(p=>[p[1],p[0]]):[anchors[a].slice(1),anchors[b].slice(1)]});}
  }
  return {index,stops,segments,points:[...stops.map(s=>s.point),...segments.flatMap(s=>s.points)]};
 }
