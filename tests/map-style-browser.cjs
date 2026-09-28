@@ -8,6 +8,7 @@ let browser;const base=process.env.BASE_URL||'https://uuurary.github.io/national
  if(process.env.LOCAL_SITE==='1')await context.route(base+'**',r=>{const relative=decodeURIComponent(new URL(r.request().url()).pathname.slice(new URL(base).pathname.length))||'index.html',root=path.resolve(__dirname,'..'),file=path.resolve(root,relative);if(!file.startsWith(root+path.sep))return r.fulfill({status:403});const types={'.js':'text/javascript','.mjs':'text/javascript','.json':'application/json','.html':'text/html','.css':'text/css','.jpg':'image/jpeg','.svg':'image/svg+xml'};return r.fulfill({body:fs.readFileSync(file),contentType:types[path.extname(file)]||'application/octet-stream'});});
  await context.route('https://api.open-meteo.com/**',r=>r.abort());
  await page.goto(base);await page.waitForSelector('#map[data-tiles-ready="true"][data-geometry-ready="true"]',{timeout:90000});
+ assert.equal(await page.locator('[data-map-zoom],.map-tools').count(),0);
  assert.equal(await page.locator('#map').getAttribute('data-map-style'),'amap://styles/fresh');
  assert.equal(await page.locator('#map .pin-hotel').count(),1);
  assert.equal(await page.locator('#map .pin-car').count(),4);

@@ -19,15 +19,10 @@ const assert=require('node:assert/strict');let browser;
  for(const width of [375,844,1440]){await page.setViewportSize({width,height:900});assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth));for(const b of await page.locator('.gallery-controls button').all())assert.ok((await b.boundingBox()).height>=44);}
  await page.setViewportSize({width:375,height:812});await page.evaluate(()=>scrollTo(0,0));await page.screenshot({path:'qa/current/gallery-mobile.png'});
  await page.waitForFunction(()=>document.querySelector('#map').dataset.geometryReady==='true');
- for(const target of ['overview','day']){
-  const id=target==='overview'?'#map':'#day-map',z=Number(await page.locator(id).getAttribute('data-zoom'));
-  await page.locator('[data-map-target="'+target+'"][data-map-zoom="1"]').click();assert.equal(Number(await page.locator(id).getAttribute('data-zoom')),z+1);
-  await page.locator('[data-map-target="'+target+'"][data-map-zoom="-1"]').click();assert.equal(Number(await page.locator(id).getAttribute('data-zoom')),z);
-  await page.locator('[data-map-target="'+target+'"][data-map-zoom="reset"]').click();
- }
+ assert.equal(await page.locator('[data-map-zoom]').count(),0);
  assert.equal(await page.locator('#map').getAttribute('data-selection'),'all');
  await page.locator('[data-day="1"]').click();assert.match(await page.locator('.timeline').innerText(),/宏村/);assert.match(await page.locator('.timeline').innerText(),/凫峰/);
  const reduced=await browser.newPage({reducedMotion:'reduce'});await reduced.route('**/map-config.json',r=>r.fulfill({json:{provider:'osm'}}));await reduced.goto(process.env.BASE_URL||'http://127.0.0.1:4173/');await reduced.locator('.hero-gallery').waitFor();assert.equal(await reduced.locator('.hero-gallery').getAttribute('data-playing'),'false');
  await reduced.route('**/assets/*.jpg',r=>r.abort());await reduced.getByRole('button',{name:'下一张实景',exact:true}).click();await reduced.locator('.hero-gallery.failed').waitFor();await reduced.unroute('**/assets/*.jpg');await reduced.getByRole('button',{name:'下一张实景',exact:true}).click();await reduced.waitForFunction(()=>!document.querySelector('.hero-gallery').classList.contains('failed'));
- console.log('PASS five photos, autoplay/pause/manual/keyboard, reduced motion, image failure recovery, responsive layout, both zoom controls and Day 2 choices');await browser.close();
+ console.log('PASS five photos, autoplay/pause/manual/keyboard, reduced motion, image failure recovery, responsive layout, no zoom toolbar and Day 2 choices');await browser.close();
 })().catch(async e=>{console.error(e);await browser?.close();process.exitCode=1;});
