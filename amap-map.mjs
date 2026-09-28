@@ -1,5 +1,6 @@
-import {mapModel,createItineraryMap} from './itinerary-map.mjs?v=20260928-final';
+import {mapModel,createItineraryMap} from './itinerary-map.mjs?v=20260928-map';
 
+import {mapTheme,markerNode,showStopDetail,resetStopDetail} from './map-presentation.mjs?v=20260928-map';
 let sdkPromise,configPromise,coordinatePromise;
 function getConfig(){if(!configPromise)configPromise=fetch('map-config.json',{signal:AbortSignal.timeout(6000),cache:'no-cache'}).then(r=>{if(!r.ok)throw Error('地图配置加载失败');return r.json();});return configPromise;}
 function loadSDK(config){
@@ -35,29 +36,32 @@ async function convertModel(A,model){
  return {...model,stops:model.stops.map((s,i)=>({...s,position:locations[i]})),segments:model.segments.map((s,i)=>{const path=locations.slice(cursor,cursor+paths[i].length);cursor+=paths[i].length;return {...s,path};})};
 }
 function amapController(A,mount,status,getCache,onFailure){
- const map=new A.Map(mount,{viewMode:'2D',zoom:7,center:[119,30.5],resizeEnable:true,scrollWheel:false,showLabel:true,animateEnable:false});
- let disposed=false,revision=0,model,overlays=[],loaded=false,frame=0;
+ const map=new A.Map(mount,{mapStyle:mapTheme.style,viewMode:'2D',zoom:7,center:[119,30.5],resizeEnable:true,scrollWheel:false,showLabel:true,animateEnable:false});
+ let disposed=false,revision=0,model,overlays=[],background=[],tripDays=[],loaded=false,frame=0,layoutTimer=0;
+ mount.dataset.mapStyle=mapTheme.style;
  const completeTimer=setTimeout(()=>{if(!loaded&&!disposed)onFailure();},20000);
+ const sizeObserver=new ResizeObserver(()=>{clearTimeout(layoutTimer);layoutTimer=setTimeout(fit,180);});sizeObserver.observe(mount);
  function message(note=''){status.textContent='高德底图 · 实线：简化缓存道路；虚线：方向示意。无实时路况。'+(note||'')+(model?.stops.length===1?' 本日仅有县域参考点，市内景点请用名称导航。':'');}
- map.on('complete',()=>{loaded=true;clearTimeout(completeTimer);mount.dataset.tilesReady='true';});
+ map.on('complete',()=>{loaded=true;clearTimeout(completeTimer);mount.dataset.tilesReady='true';fit();});
  function record(){if(disposed||!model)return;const b=map.getBounds(),sw=b.getSouthWest(),ne=b.getNorthEast();mount.dataset.zoom=String(map.getZoom());mount.dataset.bounds=JSON.stringify([sw.getLat(),sw.getLng(),ne.getLat(),ne.getLng()]);}
- map.on('moveend',record);map.on('zoomend',record);
- function fit(){if(disposed||!overlays.length||!mount.offsetWidth||!mount.offsetHeight)return;if(model.stops.length===1)map.setZoomAndCenter(12,model.stops[0].position,true);else map.setFitView(overlays,true,[28,28,28,28],13);record();}
- function draw(next){if(disposed)return;model=next;map.remove(overlays);overlays=[];
-  for(const [i,s]of model.stops.entries()){const node=document.createElement('span');node.className='amap-stop';node.textContent=model.index===null?String(i+1):s.orders.join('·');node.title=s.name;overlays.push(new A.Marker({position:s.position,title:s.name,content:node,offset:new A.Pixel(-15,-15)}));}
-  for(const segment of model.segments)overlays.push(new A.Polyline({path:segment.path,strokeColor:segment.cached?'#376447':'#477d97',strokeWeight:model.index===null?3:4,strokeOpacity:.9,strokeStyle:segment.cached?'solid':'dashed'}));
+ map.on('moveend',record);map.on('zoomend',record);map.on('resize',fit);
+ function fit(){if(disposed||!overlays.length||!mount.offsetWidth||!mount.offsetHeight)return;if(model.stops.length===1)map.setZoomAndCenter(12,model.stops[0].position,true);else map.setFitView(overlays,true,[48,40,48,40],13);record();}
+ function draw(next,context){if(disposed)return;model=next;map.remove([...overlays,...background]);overlays=[];background=[];resetStopDetail(mount);
+  if(context)for(const s of context.segments)background.push(new A.Polyline({path:s.path,strokeColor:mapTheme.context,strokeWeight:2,strokeOpacity:.25,zIndex:30}));map.add(background);
+  for(const [i,s]of model.stops.entries()){const node=markerNode(s,tripDays,i+1,p=>showStopDetail(mount,p));overlays.push(new A.Marker({position:s.position,title:s.name,content:node,offset:new A.Pixel(-22,-22),zIndex:120}));}
+  for(const segment of model.segments)overlays.push(new A.Polyline({path:segment.path,strokeColor:segment.cached?mapTheme.route:mapTheme.hint,strokeWeight:model.index===null?4:6,strokeOpacity:1,isOutline:true,outlineColor:mapTheme.outline,borderWeight:2,lineJoin:'round',lineCap:'round',zIndex:60,strokeStyle:segment.cached?'solid':'dashed'}));
   map.add(overlays);mount.dataset.selection=model.index===null?'all':String(model.index);mount.dataset.stops=model.stops.map(s=>s.key).join(',');mount.dataset.geometryReady=String(model.segments.some(s=>s.cached));mount.dataset.coordinateSystem='GCJ-02';fit();message();
  }
  return {
-  async show(anchors,days,index){const run=++revision;try{
+  async show(anchors,days,index){tripDays=days;const run=++revision;try{
    const initial=await convertModel(A,mapModel(anchors,days,index,null));if(disposed||run!==revision)return;draw(initial);
    let cache;try{cache=await getCache();}catch{message('道路数据加载失败，请用高德地点导航。');return;}
-   const next=await convertModel(A,mapModel(anchors,days,index,cache));if(disposed||run!==revision)return;draw(next);
+   const next=await convertModel(A,mapModel(anchors,days,index,cache));const context=index===null?null:await convertModel(A,mapModel(anchors,days,null,cache));if(disposed||run!==revision)return;draw(next,context);
   }catch(error){if(!disposed&&run===revision)onFailure(error);}},
   resize(){cancelAnimationFrame(frame);frame=requestAnimationFrame(fit);},
   zoomBy(delta){if(disposed||!model)return false;map.setZoom(Math.max(3,Math.min(18,map.getZoom()+delta)),true);record();return true;},
   resetView(){if(disposed||!model)return false;fit();return true;},
-  destroy(){disposed=true;revision++;clearTimeout(completeTimer);cancelAnimationFrame(frame);map.destroy();}
+  destroy(){disposed=true;revision++;clearTimeout(completeTimer);clearTimeout(layoutTimer);sizeObserver.disconnect();cancelAnimationFrame(frame);map.destroy();}
  };
 }
 export function createTravelMap(mount,status,getCache){
