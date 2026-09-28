@@ -19,7 +19,7 @@ let browser;const base=process.env.BASE_URL||'https://uuurary.github.io/national
   await page.setViewportSize({width,height:900});await page.locator('#day-map-panel').scrollIntoViewIfNeeded();
   assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth));
   await page.waitForFunction(()=>{const m=document.querySelector('#day-map').getBoundingClientRect();return [...document.querySelectorAll('#day-map .trip-pin')].every(p=>{const r=p.getBoundingClientRect();return r.top>=m.top&&r.bottom<=m.bottom&&r.left>=m.left&&r.right<=m.right;});});
-  for(const b of await page.locator('#day-map .trip-pin').all()){const box=await b.boundingBox();assert.ok(box.width>=44&&box.height>=44);}
+  for(const b of await page.locator('#day-map .trip-pin').all()){const box=await b.boundingBox();assert.ok(box.width>=44&&box.height>=44);const face=await b.locator('.pin-face').boundingBox();assert.equal(face.width,32);assert.equal(face.height,32);}
   await page.locator('#day-map button[data-stop="tangmo"]').click();assert.match(await page.locator('#day-map-detail').innerText(),/唐模/);
   await page.screenshot({path:'qa/current/map-style-'+width+'.png'});
  }

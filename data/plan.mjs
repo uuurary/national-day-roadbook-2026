@@ -110,7 +110,4 @@ export const plan={version:'2026-09-28-anhui-final',checked:'2026-09-28',title:'
  ['Open-Meteo天气接口','https://open-meteo.com/en/docs','按日期返回可用预报；模型发布时间未提供时不编造，无数据标待更新。']
 ]};
 plan.packing=packing.map(p=>[...p]);
-plan.packing.find(p=>p[2]==='wash')[3]='牙刷、快干毛巾、个人洗护小样（集中装入轻便淋浴包）';
-plan.packing.find(p=>p[2]==='laundry')[3]='少量洗衣片、晾衣绳、干湿分装袋；5天版无固定酒店洗衣，带足换洗衣物';
-plan.packing.find(p=>p[2]==='offline')[3]='离线地图、已购门票订单截图、服务区方向与充电备选、少量现金';
 

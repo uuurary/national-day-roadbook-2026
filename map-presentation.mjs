@@ -22,7 +22,7 @@ export function markerNode(stop,days,number,onSelect){
  const p=stopPresentation(stop,days),node=document.createElement('button');
  node.type='button';node.className='trip-pin pin-'+p.kind;node.dataset.stop=stop.key;node.dataset.kind=p.kind;
  node.setAttribute('aria-label',number+' · '+stop.name+' · '+p.note);node.title=stop.name+' · '+p.note;
- node.innerHTML=icon(p.kind)+'<span class="pin-number"></span>'+(p.shower?'<span class="pin-shower">'+icon('shower')+'</span>':'');
+ node.innerHTML='<span class="pin-face">'+icon(p.kind)+'<span class="pin-number"></span>'+(p.shower?'<span class="pin-shower">'+icon('shower')+'</span>':'')+'</span>';
  node.querySelector('.pin-number').textContent=String(number);
  node.addEventListener('click',e=>{e.stopPropagation();onSelect(p);});
  return node;

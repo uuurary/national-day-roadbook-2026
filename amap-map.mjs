@@ -1,6 +1,6 @@
-import {mapModel,createItineraryMap} from './itinerary-map.mjs?v=20260928-map';
+import {mapModel,createItineraryMap} from './itinerary-map.mjs?v=20260928-pack';
 
-import {mapTheme,markerNode,showStopDetail,resetStopDetail} from './map-presentation.mjs?v=20260928-map';
+import {mapTheme,markerNode,showStopDetail,resetStopDetail} from './map-presentation.mjs?v=20260928-pack';
 let sdkPromise,configPromise,coordinatePromise;
 function getConfig(){if(!configPromise)configPromise=fetch('map-config.json',{signal:AbortSignal.timeout(6000),cache:'no-cache'}).then(r=>{if(!r.ok)throw Error('地图配置加载失败');return r.json();});return configPromise;}
 function loadSDK(config){
@@ -47,9 +47,9 @@ function amapController(A,mount,status,getCache,onFailure){
  map.on('moveend',record);map.on('zoomend',record);map.on('resize',fit);
  function fit(){if(disposed||!overlays.length||!mount.offsetWidth||!mount.offsetHeight)return;if(model.stops.length===1)map.setZoomAndCenter(12,model.stops[0].position,true);else map.setFitView(overlays,true,[48,40,48,40],13);record();}
  function draw(next,context){if(disposed)return;model=next;map.remove([...overlays,...background]);overlays=[];background=[];resetStopDetail(mount);
-  if(context)for(const s of context.segments)background.push(new A.Polyline({path:s.path,strokeColor:mapTheme.context,strokeWeight:2,strokeOpacity:.25,zIndex:30}));map.add(background);
+  if(context)for(const s of context.segments)background.push(new A.Polyline({path:s.path,strokeColor:mapTheme.context,strokeWeight:1,strokeOpacity:.2,zIndex:30}));map.add(background);
   for(const [i,s]of model.stops.entries()){const node=markerNode(s,tripDays,i+1,p=>showStopDetail(mount,p));overlays.push(new A.Marker({position:s.position,title:s.name,content:node,offset:new A.Pixel(-22,-22),zIndex:120}));}
-  for(const segment of model.segments)overlays.push(new A.Polyline({path:segment.path,strokeColor:segment.cached?mapTheme.route:mapTheme.hint,strokeWeight:model.index===null?4:6,strokeOpacity:1,isOutline:true,outlineColor:mapTheme.outline,borderWeight:2,lineJoin:'round',lineCap:'round',zIndex:60,strokeStyle:segment.cached?'solid':'dashed'}));
+  for(const segment of model.segments)overlays.push(new A.Polyline({path:segment.path,strokeColor:segment.cached?mapTheme.route:mapTheme.hint,strokeWeight:model.index===null?2:3,strokeOpacity:1,isOutline:true,outlineColor:mapTheme.outline,borderWeight:1,lineJoin:'round',lineCap:'round',zIndex:60,strokeStyle:segment.cached?'solid':'dashed'}));
   map.add(overlays);mount.dataset.selection=model.index===null?'all':String(model.index);mount.dataset.stops=model.stops.map(s=>s.key).join(',');mount.dataset.geometryReady=String(model.segments.some(s=>s.cached));mount.dataset.coordinateSystem='GCJ-02';fit();message();
  }
  return {
