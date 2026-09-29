@@ -34,7 +34,7 @@ let browser;const base=process.env.BASE_URL||'https://uuurary.github.io/national
  await page.waitForSelector('#map[data-provider="amap"][data-traffic-state="unavailable"][data-geometry-ready="true"]');
  assert.match(await page.locator('#map-state').innerText(),/实时路况加载失败或更新未确认/);
  await page.locator('[data-day="3"]').click();await page.waitForSelector('#day-map[data-selection="3"][data-traffic-state="unavailable"] .trip-pin');
- const fallback=await context.newPage();await fallback.route('https://webapi.amap.com/**',r=>r.abort());await fallback.goto(base);await fallback.waitForSelector('#day-map[data-provider="osm"] .trip-pin');await fallback.locator('#day-map button[data-stop="taopark"]').focus();await fallback.keyboard.press('Enter');assert.match(await fallback.locator('#day-map-detail').innerText(),/无淋浴/);
+ const fallback=await context.newPage();await fallback.route('https://webapi.amap.com/**',r=>r.abort());await fallback.goto(base);await fallback.waitForSelector('#day-map[data-provider="osm"] .trip-pin');await fallback.locator('[data-day="0"]').click();await fallback.locator('#day-map button[data-stop="taopark"]').focus();await fallback.keyboard.press('Enter');assert.match(await fallback.locator('#day-map-detail').innerText(),/无淋浴/);
  assert.deepEqual(errors,[]);console.log('PASS official fresh basemap, 4 car/1 hotel/3 shower semantics, mobile touch/keyboard details, 5-day no hotel, fallback markers, 375/844/1440 layout');
  await browser.close();
 })().catch(async e=>{console.error((e.stack||e.message).replace(/[a-f0-9]{32}/gi,'[redacted]').slice(0,1500));await browser?.close();process.exitCode=1;});
