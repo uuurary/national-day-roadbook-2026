@@ -1,5 +1,18 @@
 import test from 'node:test';import assert from 'node:assert/strict';import fs from 'node:fs';import {plan} from '../data/plan.mjs';import {mapModel} from '../itinerary-map.mjs';import {pois} from '../data/pois.mjs';
 const cache=JSON.parse(fs.readFileSync(new URL('../data/routes.json',import.meta.url),'utf8'));
+
+test('traffic refresh, timeout, recovery and cleanup are isolated',async()=>{
+ const {attachTraffic}=await import('../amap-map.mjs');let tick,delay,layer,removed=false,stopped=false;const states=[];
+ const clock={setTimeout(fn,ms){tick=fn;delay=ms;return 1;},clearTimeout(){}};
+ class Traffic{constructor(options){this.options=options;layer=this;}on(_,fn){this.complete=fn;}off(){this.complete=null;}stopFresh(){stopped=true;}}
+ const cleanup=attachTraffic({TileLayer:{Traffic}},{add(){},remove(){removed=true;}},s=>states.push(s),clock);
+ assert.equal(layer.options.autoRefresh,true);assert.equal(layer.options.interval,180);assert.equal(delay,20000);
+ tick();assert.equal(states.at(-1),'unavailable');layer.complete();assert.equal(states.at(-1),'ready');assert.equal(delay,240000);
+ tick();assert.equal(states.at(-1),'unavailable');layer.complete();assert.equal(states.at(-1),'ready');
+ cleanup();assert.ok(removed&&stopped);const length=states.length;tick();assert.equal(states.length,length);
+ const failed=[];attachTraffic({TileLayer:{Traffic:class{constructor(){throw Error('offline');}}}},{},s=>failed.push(s),clock)();
+ assert.deepEqual(failed,['loading','unavailable']);
+});
 test('maps follow selected day while overview contains all planned stays',()=>{for(const days of Object.values(plan.routes[0].variants)){for(let i=0;i<days.length;i++)assert.deepEqual(mapModel(plan.anchors,days,i,cache).stops.map(s=>s.key),[...new Set(days[i].path)]);const keys=mapModel(plan.anchors,days,null,cache).stops.map(s=>s.key);for(const k of ['changzhou','taopark','fufeng','qiyun','chengkanService','guangde'])assert.ok(keys.includes(k));}});
 test('directional highway routes do not reuse reverse-side cached paths',()=>{const m=mapModel(plan.anchors,[{path:['yimei','taopark','yimei']}],null,cache);assert.equal(m.segments.length,2);assert.deepEqual(m.stops[0].orders,[1,3]);const missing=mapModel(plan.anchors,[{path:['guangde','xidi']}],0,cache);assert.equal(missing.segments[0].cached,false);});
 test('single stop and missing geometry show gracefully',()=>{assert.equal(mapModel(plan.anchors,[{path:['guangde']}],0,null).stops.length,1);assert.ok(mapModel(plan.anchors,plan.routes[0].variants[6],0,null).segments.every(s=>!s.cached));});

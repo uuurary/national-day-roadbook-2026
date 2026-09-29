@@ -35,13 +35,24 @@ async function convertModel(A,model){
  const points=[...model.stops.map(s=>s.point),...paths.flat()],locations=await convertPoints(A,points);let cursor=model.stops.length;
  return {...model,stops:model.stops.map((s,i)=>({...s,position:locations[i]})),segments:model.segments.map((s,i)=>{const path=locations.slice(cursor,cursor+paths[i].length);cursor+=paths[i].length;return {...s,path};})};
 }
+// Keep traffic failures isolated from the basemap and itinerary overlays.
+export function attachTraffic(A,map,notify,clock=globalThis){
+ let layer,disposed=false,timer;
+ const arm=delay=>{clock.clearTimeout(timer);timer=clock.setTimeout(()=>{if(!disposed)notify('unavailable');},delay);};
+ const complete=()=>{if(disposed)return;notify('ready');arm(240000);};
+ notify('loading');
+ try{layer=new A.TileLayer.Traffic({autoRefresh:true,interval:180,zIndex:10});layer.on('complete',complete);arm(20000);map.add(layer);}catch{clock.clearTimeout(timer);notify('unavailable');}
+ return ()=>{disposed=true;clock.clearTimeout(timer);if(layer){layer.off('complete',complete);layer.stopFresh?.();map.remove(layer);layer.destroy?.();}};
+}
 function amapController(A,mount,status,getCache,onFailure){
  const map=new A.Map(mount,{mapStyle:mapTheme.style,viewMode:'2D',zoom:7,center:[119,30.5],resizeEnable:true,scrollWheel:false,showLabel:true,animateEnable:false});
  let disposed=false,revision=0,model,overlays=[],background=[],tripDays=[],loaded=false,frame=0,layoutTimer=0;
  mount.dataset.mapStyle=mapTheme.style;
  const completeTimer=setTimeout(()=>{if(!loaded&&!disposed)onFailure();},20000);
  const sizeObserver=new ResizeObserver(()=>{clearTimeout(layoutTimer);layoutTimer=setTimeout(fit,180);});sizeObserver.observe(mount);
- function message(note=''){status.textContent='高德底图 · 实线：简化缓存道路；虚线：方向示意。无实时路况。'+(note||'')+(model?.stops.length===1?' 本日仅有县域参考点，市内景点请用名称导航。':'');}
+ let trafficState='loading',roadNote='';
+ function message(note){if(note!==undefined)roadNote=note;const traffic=trafficState==='ready'?'实时路况图层已加载，约每3分钟自动刷新；颜色：绿通畅、黄缓行、红拥堵、深红严重拥堵。':trafficState==='loading'?'实时路况加载中…':'实时路况加载失败或更新未确认，当前颜色可能已过期；请以高德导航为准，行程仍可查看。';status.textContent='高德底图 · 实线：简化缓存道路；虚线：方向示意。'+traffic+' 路况为当前时刻，非出游日期预测；路线与耗时不会自动重算。'+roadNote+(model?.stops.length===1?' 本日仅有县域参考点，市内景点请用名称导航。':'');}
+ const disposeTraffic=attachTraffic(A,map,state=>{trafficState=state;mount.dataset.trafficState=state;message();});
  map.on('complete',()=>{loaded=true;clearTimeout(completeTimer);mount.dataset.tilesReady='true';fit();});
  function record(){if(disposed||!model)return;const b=map.getBounds(),sw=b.getSouthWest(),ne=b.getNorthEast();mount.dataset.zoom=String(map.getZoom());mount.dataset.bounds=JSON.stringify([sw.getLat(),sw.getLng(),ne.getLat(),ne.getLng()]);}
  map.on('moveend',record);map.on('zoomend',record);map.on('resize',fit);
@@ -61,7 +72,7 @@ function amapController(A,mount,status,getCache,onFailure){
   resize(){cancelAnimationFrame(frame);frame=requestAnimationFrame(fit);},
   zoomBy(delta){if(disposed||!model)return false;map.setZoom(Math.max(3,Math.min(18,map.getZoom()+delta)),true);record();return true;},
   resetView(){if(disposed||!model)return false;fit();return true;},
-  destroy(){disposed=true;revision++;clearTimeout(completeTimer);clearTimeout(layoutTimer);sizeObserver.disconnect();cancelAnimationFrame(frame);map.destroy();}
+  destroy(){disposed=true;revision++;disposeTraffic();clearTimeout(completeTimer);clearTimeout(layoutTimer);sizeObserver.disconnect();cancelAnimationFrame(frame);map.destroy();}
  };
 }
 export function createTravelMap(mount,status,getCache){
