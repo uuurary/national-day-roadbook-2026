@@ -1,6 +1,14 @@
 import test from 'node:test';import assert from 'node:assert/strict';import fs from 'node:fs';import {plan} from '../data/plan.mjs';import {mapModel} from '../itinerary-map.mjs';import {pois} from '../data/pois.mjs';
 const cache=JSON.parse(fs.readFileSync(new URL('../data/routes.json',import.meta.url),'utf8'));
 
+test('timeline navigation resolves destination and directional services, never generic rests',async()=>{
+ const {eventDestination}=await import('../core.mjs');const path=plan.routes[0].variants[6][3].path;
+ assert.equal(eventDestination('呈坎 → 唐模西门停车场',path,plan.anchors).key,'tangmo');
+ assert.equal(eventDestination('唐模 → 呈坎服务区（北京方向）',path,plan.anchors).key,'chengkanService');
+ assert.equal(eventDestination('合规停车处',path,plan.anchors),null);
+ assert.equal(eventDestination('宏村',path,plan.anchors),null);
+});
+
 test('traffic refresh, timeout, recovery and cleanup are isolated',async()=>{
  const {attachTraffic}=await import('../amap-map.mjs');let tick,delay,layer,removed=false,stopped=false;const states=[];
  const clock={setTimeout(fn,ms){tick=fn;delay=ms;return 1;},clearTimeout(){}};

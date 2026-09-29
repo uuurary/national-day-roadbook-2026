@@ -1,6 +1,6 @@
-import {mapModel,createItineraryMap} from './itinerary-map.mjs?v=20260928-pack';
+import {mapModel,createItineraryMap} from './itinerary-map.mjs?v=20260929-ux';
 
-import {mapTheme,markerNode,showStopDetail,resetStopDetail} from './map-presentation.mjs?v=20260928-pack';
+import {mapTheme,markerNode,showStopDetail,resetStopDetail} from './map-presentation.mjs?v=20260929-ux';
 let sdkPromise,configPromise,coordinatePromise;
 function getConfig(){if(!configPromise)configPromise=fetch('map-config.json',{signal:AbortSignal.timeout(6000),cache:'no-cache'}).then(r=>{if(!r.ok)throw Error('地图配置加载失败');return r.json();});return configPromise;}
 function loadSDK(config){
@@ -50,14 +50,14 @@ function amapController(A,mount,status,getCache,onFailure){
  mount.dataset.mapStyle=mapTheme.style;
  const completeTimer=setTimeout(()=>{if(!loaded&&!disposed)onFailure();},20000);
  const sizeObserver=new ResizeObserver(()=>{clearTimeout(layoutTimer);layoutTimer=setTimeout(fit,180);});sizeObserver.observe(mount);
- let trafficState='loading',roadNote='';
- function message(note){if(note!==undefined)roadNote=note;const traffic=trafficState==='ready'?'实时路况图层已加载，约每3分钟自动刷新；颜色：绿通畅、黄缓行、红拥堵、深红严重拥堵。':trafficState==='loading'?'实时路况加载中…':'实时路况加载失败或更新未确认，当前颜色可能已过期；请以高德导航为准，行程仍可查看。';status.textContent='高德底图 · 实线：简化缓存道路；虚线：方向示意。'+traffic+' 路况为当前时刻，非出游日期预测；路线与耗时不会自动重算。'+roadNote+(model?.stops.length===1?' 本日仅有县域参考点，市内景点请用名称导航。':'');}
- const disposeTraffic=attachTraffic(A,map,state=>{trafficState=state;mount.dataset.trafficState=state;message();});
+ let trafficState='loading',roadNote='',trafficLoadedAt='';
+ function message(note){if(note!==undefined)roadNote=note;status.dataset.state=trafficState;const traffic=trafficState==='ready'?'路况已加载 · 每3分钟自动刷新 · 最近加载 '+trafficLoadedAt+'（北京时间）':trafficState==='loading'?'实时路况加载中…':'路况更新未确认，颜色可能过期；以高德导航为准。行程仍可查看。';status.textContent=traffic+'。'+roadNote;}
+ const disposeTraffic=attachTraffic(A,map,state=>{trafficState=state;if(state==='ready')trafficLoadedAt=new Intl.DateTimeFormat('zh-CN',{timeZone:'Asia/Shanghai',hour:'2-digit',minute:'2-digit',second:'2-digit',hour12:false}).format(new Date());mount.dataset.trafficState=state;message();});
  map.on('complete',()=>{loaded=true;clearTimeout(completeTimer);mount.dataset.tilesReady='true';fit();});
  function record(){if(disposed||!model)return;const b=map.getBounds(),sw=b.getSouthWest(),ne=b.getNorthEast();mount.dataset.zoom=String(map.getZoom());mount.dataset.bounds=JSON.stringify([sw.getLat(),sw.getLng(),ne.getLat(),ne.getLng()]);}
  map.on('moveend',record);map.on('zoomend',record);map.on('resize',fit);
  function fit(){if(disposed||!overlays.length||!mount.offsetWidth||!mount.offsetHeight)return;if(model.stops.length===1)map.setZoomAndCenter(12,model.stops[0].position,true);else map.setFitView(overlays,true,[48,40,48,40],13);record();}
- function draw(next,context){if(disposed)return;model=next;map.remove([...overlays,...background]);overlays=[];background=[];resetStopDetail(mount);
+ function draw(next,context){if(disposed)return;model=next;map.remove([...overlays,...background]);overlays=[];background=[];resetStopDetail(mount,model.stops,tripDays);
   if(context)for(const s of context.segments)background.push(new A.Polyline({path:s.path,strokeColor:mapTheme.context,strokeWeight:1,strokeOpacity:.2,zIndex:30}));map.add(background);
   for(const [i,s]of model.stops.entries()){const node=markerNode(s,tripDays,i+1,p=>showStopDetail(mount,p));overlays.push(new A.Marker({position:s.position,title:s.name,content:node,offset:new A.Pixel(-22,-22),zIndex:120}));}
   for(const segment of model.segments)overlays.push(new A.Polyline({path:segment.path,strokeColor:segment.cached?mapTheme.route:mapTheme.hint,strokeWeight:model.index===null?2:3,strokeOpacity:1,isOutline:true,outlineColor:mapTheme.outline,borderWeight:1,lineJoin:'round',lineCap:'round',zIndex:60,strokeStyle:segment.cached?'solid':'dashed'}));
@@ -77,7 +77,7 @@ function amapController(A,mount,status,getCache,onFailure){
 }
 export function createTravelMap(mount,status,getCache){
  let controller,disposed=false,latest,failed=false,reason='';
- function fallback(error){if(disposed||failed)return;failed=true;const code=/^[A-Z_0-9]{1,80}$/.test(error?.message||'')?error.message:'LOAD_ERROR';mount.dataset.mapError=code;controller?.destroy();mount.replaceChildren();mount.dataset.provider='osm';delete mount.dataset.coordinateSystem;delete mount.dataset.tilesReady;reason=`高德加载失败（${code}），已回退 OpenStreetMap；请检查域名、额度或网络。`;
+ function fallback(error){if(disposed||failed)return;failed=true;const code=/^[A-Z_0-9]{1,80}$/.test(error?.message||'')?error.message:'LOAD_ERROR';mount.dataset.mapError=code;controller?.destroy();mount.replaceChildren();mount.dataset.provider='osm';delete mount.dataset.coordinateSystem;delete mount.dataset.tilesReady;delete mount.dataset.trafficState;status.dataset.state='unavailable';reason=`高德加载失败（${code}），已回退 OpenStreetMap；请检查域名、额度或网络。`;
   controller=createItineraryMap(mount,status,getCache);if(latest)controller.show(...latest);
  }
  // Keep fallback explanation when Leaflet subsequently updates its status.

@@ -4,6 +4,13 @@ export const sumBudget=days=>days.reduce((acc,d)=>acc.map((n,i)=>n+d.budget[i]),
 export const total=b=>[b[0]+b[2]+b[4]+b[6],b[1]+b[3]+b[5]+b[7]];
 export const money=b=>`¥${b[0].toLocaleString('zh-CN')}–${b[1].toLocaleString('zh-CN')}`;
 export const mapURL=name=>`https://uri.amap.com/search?keyword=${encodeURIComponent(name)}&callnative=1`;
+// Match only named places; generic lunch/nap stops must not invent an entrance.
+export function eventDestination(place,path,anchors){
+ const destination=place.split('→').at(-1).trim();
+ const aliases=[['呈坎服务区','chengkanService'],['凫峰','fufeng'],['齐云山服务区','qiyun'],['正门停车场','taopark'],['益妹','yimei'],['桃花潭','yimei'],['查济','zhaji'],['卢村','lucun'],['宏村','hongcun'],['西递','xidi'],['西溪南','xixinan'],['呈坎','chengkan'],['唐模','tangmo'],['渔梁','yuliang'],['徽州古城','huizhouOld'],['广德','guangde']];
+ const match=aliases.find(([name,key])=>destination.includes(name)&&path.includes(key));
+ return match?{key:match[1],name:anchors[match[1]][0]}:null;
+}
 export const googleURL=name=>`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(name)}`;
 export const weatherURL=c=>`https://api.open-meteo.com/v1/forecast?latitude=${c[1]}&longitude=${c[2]}&daily=weather_code,temperature_2m_max,temperature_2m_min,precipitation_probability_max,wind_speed_10m_max&timezone=Asia%2FShanghai&forecast_days=16`;
 export function exactWeather(payload,date){const d=payload?.daily;if(!Array.isArray(d?.time))return null;const i=d.time.indexOf(date);if(i<0)return null;const out={date,min:d.temperature_2m_min?.[i],max:d.temperature_2m_max?.[i],code:d.weather_code?.[i],rain:d.precipitation_probability_max?.[i],wind:d.wind_speed_10m_max?.[i]};return [out.min,out.max,out.code].every(Number.isFinite)&&out.min<=out.max?out:null;}

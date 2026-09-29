@@ -29,3 +29,41 @@ button.trip-pin:hover{filter:brightness(1.12)}button.trip-pin:focus-visible{outl
 .day-card-body #day-map{height:300px}
 @media(max-width:600px){.day-card-body #day-map{height:280px}.map-legend{gap:8px 12px}}
 @media(max-width:600px){.hero-gallery .gallery-stage{min-height:235px}.gallery-controls{gap:6px;padding:8px}.gallery-controls button{padding:8px 10px}}
+
+/* Trip-first hierarchy: keep secondary details available without blocking the day. */
+:root{--route-blue:#234c85;--warning-ink:#755723;--warning-surface:#fff3dc}
+.hero-jump{display:inline-flex;align-items:center;min-height:44px;margin-top:20px;font-weight:600}
+.day-switcher{position:sticky;top:0;z-index:100;display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:8px;padding:8px;background:var(--paper);border-bottom:1px solid var(--line);margin-bottom:20px}
+.day-switcher button{padding:8px 4px;font-size:14px;min-width:44px;line-height:1.4}
+.day-switcher button span{display:block;font-size:12px;margin-top:4px}
+.day-card .day-tab{scroll-margin-top:100px}
+#day-map-rail{top:100px}
+.day-quick{margin:16px 0;padding:16px;border-left:3px solid var(--green);background:var(--blue)}
+.day-quick p{margin-bottom:8px;font-size:16px}
+.day-assumptions summary,.map-explainer summary,.map-place-list summary,.packing-tools summary,.day-map-disclosure>summary{min-height:44px;padding:10px 0;cursor:pointer;font-size:14px;line-height:1.7}
+.day-assumptions{margin-bottom:16px}.day-map-disclosure{display:none}
+.event-nav a{display:inline-flex;align-items:center;min-height:44px;font-size:14px}
+.event p,.day-card-body .side-stack p{font-size:16px;line-height:1.75}
+.day-card-body .side-stack .panel{border:0;border-top:1px solid var(--line);border-radius:0;background:transparent;padding:20px 0 0;margin-top:20px}
+.day-card-body .side-stack .meta,.event-nav{font-size:14px}
+.map-state{color:var(--muted);font-size:14px;line-height:1.6}
+.map-state[data-state=unavailable]{color:var(--warning-ink);background:var(--warning-surface);border-left:3px solid #b18845;padding:10px}
+.map-explainer .map-meta,.day-card-body .map-explainer .map-meta{font-size:14px}
+.map-place-list button{display:block;width:100%;text-align:left;margin:8px 0;font-size:14px;overflow-wrap:anywhere}
+.map-place-list{margin-top:8px}.map-explainer{border-top:1px solid var(--line);margin-top:8px}
+.legend-road{border-color:var(--route-blue)}
+.packing-grid{align-items:start}.packing-group{border-top:1px solid var(--line)}
+.packing-group>summary{cursor:pointer;min-height:48px;padding:12px 0;font-size:18px;font-weight:600}
+.category-count{float:right;font-size:14px;font-weight:400;color:var(--muted);margin-left:8px}
+.packing-tools{display:flex;gap:16px;flex-wrap:wrap;align-items:start;margin:16px 0 24px;padding:12px 0;border-block:1px solid var(--line)}
+.traveler-fields{display:flex;gap:12px;flex-wrap:wrap}.traveler-fields label{display:block;flex:1;min-width:130px}
+.traveler-fields input{display:block;width:100%;max-width:230px;min-height:44px;border:1px solid var(--line);border-radius:8px;padding:8px;font-size:16px;background:var(--card);color:var(--ink)}
+.pack-title{font-size:16px}.check-label{font-size:16px}.check-label:has(input:checked){color:var(--muted)}
+[hidden]{display:none!important}
+button:disabled{cursor:default}
+summary:focus-visible{outline:3px solid #336e9b;outline-offset:3px;border-radius:4px}
+.packing-notes summary{cursor:pointer;min-height:44px;padding:10px 0;font-size:14px}
+@media(max-width:900px){.day-map-disclosure{display:block;margin:12px 0 20px}.day-map-disclosure>summary{font-weight:600;color:var(--green)}#day-map-rail{position:static}.day-card-body #day-map-panel{margin:8px 0;padding:12px}.day-card-body{padding:16px}.day-quick{padding:12px}}
+@media(max-width:600px){.day-switcher{gap:8px;padding:8px 0;grid-template-columns:repeat(3,minmax(0,1fr))}.day-switcher button{display:flex;justify-content:center;align-items:center;gap:8px}.day-switcher button span{margin:0}.day-card .day-tab{scroll-margin-top:130px}.day-quick p{font-size:16px}.day-card-body .side-stack .panel{padding-inline:0}.main-nav a{font-size:12px}.pack-item{padding:12px 0}.check-row{gap:16px}.hero-copy .lede{font-size:16px}}
+@media(max-height:500px){.day-switcher{position:static}.day-card .day-tab{scroll-margin-top:16px}}
+@media print{.day-switcher,.hero-jump,.packing-tools,.day-map-disclosure{display:none}}

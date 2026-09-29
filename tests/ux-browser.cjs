@@ -1,0 +1,46 @@
+const {chromium}=require(process.env.PLAYWRIGHT_MODULE||'playwright');
+const assert=require('node:assert/strict'),fs=require('node:fs'),path=require('node:path');
+const base=process.env.BASE_URL||'http://127.0.0.1:4173/';let browser;
+(async()=>{
+ browser=await chromium.launch({channel:'chrome',headless:true});
+ const context=await browser.newContext({viewport:{width:375,height:812},reducedMotion:'reduce'});
+ await context.route('**/map-config.json',r=>r.fulfill({json:{provider:'osm'}}));
+ await context.route('https://api.open-meteo.com/**',r=>r.abort());
+ const page=await context.newPage(),errors=[];page.on('pageerror',e=>errors.push(e.message));
+ await page.goto(base);await page.locator('.day-quick').waitFor();
+ assert.equal(await page.locator('#day-map-disclosure').getAttribute('open'),null);
+ assert.ok(await page.locator('.hero-jump').isVisible());
+ await page.locator('.hero-jump').click();
+ assert.equal(await page.locator('#day-switcher button').count(),6);
+ await page.locator('[data-switch-day="3"]').click();
+ assert.match(await page.locator('.day-quick').innerText(),/唐模/);
+ assert.match(await page.locator('.day-quick').innerText(),/呈坎服务区/);
+ assert.ok(await page.locator('.event-nav a').count()>5);
+ const nav=page.locator('.timeline li').filter({hasText:'唐模 → 呈坎服务区'}).locator('.event-nav a');
+ assert.match(decodeURIComponent(await nav.getAttribute('href')),/呈坎服务区.*北京方向/);
+ assert.ok(await page.locator('.timeline').evaluate(el=>el.getBoundingClientRect().top<1200));
+ await page.screenshot({path:'qa/current/ux-mobile-day.png'});
+ await page.locator('#day-map-disclosure>summary').click();await page.locator('#day-map .trip-pin').first().waitFor();
+ await page.locator('#day-map-places>summary').click();await page.locator('#day-map-places button').last().click();
+ assert.match(await page.locator('#day-map-detail').innerText(),/呈坎服务区/);
+ await page.locator('.main-nav a[href="#packing"]').click();
+ await page.locator('[data-check="pack-id-1"]').check();await page.locator('[data-check="pack-id-2"]').check();
+ await page.locator('#packing-pending').check();
+ assert.equal(await page.locator('.pack-item').filter({has:page.locator('[data-check="pack-id-1"]')}).isVisible(),false);
+ assert.equal(await page.locator('.category-count').first().innerText(),'1/2 项');
+ await page.locator('.packing-tools details>summary').click();await page.locator('[data-traveler="0"]').fill('小旅人');await page.locator('[data-traveler="0"]').press('Tab');
+ assert.match(await page.locator('[data-check="pack-stamp-book-1"]').locator('..').innerText(),/小旅人/);
+ await page.locator('.packing-group').first().locator('summary').click();
+ assert.equal(await page.locator('[data-check="pack-stamp-book-1"]').isVisible(),false);
+ await page.reload();await page.locator('.day-quick').waitFor();
+ assert.ok(await page.locator('[data-check="pack-id-1"]').isChecked());
+ assert.match(await page.locator('[data-check="pack-id-1"]').locator('..').innerText(),/小旅人/);
+ for(const size of [{width:375,height:812},{width:844,height:390},{width:1440,height:1000}]){
+  await page.setViewportSize(size);assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth));
+  await page.locator('[data-switch-day="2"]').click();await page.locator('[data-switch-day="3"]').click();
+  assert.equal(await page.locator('[data-day="3"]').getAttribute('aria-expanded'),'true');
+ }
+ await page.setViewportSize({width:375,height:812});await page.addStyleTag({content:'.event p,.day-quick p,.check-label{font-size:32px!important}'});assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth));
+ assert.deepEqual(errors,[]);console.log('PASS compact mobile timeline, sticky day switch, entrance navigation, map list, checklist filter/names/counts/persistence, 375/844/1440 and enlarged text');
+ await browser.close();
+})().catch(async e=>{console.error(e);await browser?.close();process.exitCode=1;});

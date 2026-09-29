@@ -1,5 +1,5 @@
 // Shared marker semantics; derive lodging from the selected itinerary, not hard-coded POIs.
-export const mapTheme={style:'amap://styles/fresh',route:'#285b49',outline:'#fffdf5',hint:'#527f99',context:'#819b90'};
+export const mapTheme={style:'amap://styles/fresh',route:'#234c85',outline:'#fffdf5',hint:'#527f99',context:'#819b90'};
 export const symbols={
  sight:'<path d="M3 18 9 7l4 6 3-4 5 9H3Z"/><path d="m7 10 2 2 2-2"/>',
  car:'<path d="m5 9 2-4h10l2 4M4 9h16v9H4zM7 18v2m10-2v2M7 13h2m6 0h2"/>',
@@ -32,7 +32,12 @@ export function showStopDetail(mount,p){
  panel.replaceChildren();const title=document.createElement('strong'),note=document.createElement('span');
  title.textContent=p.name;note.textContent=p.note;panel.append(title,note);panel.dataset.selected='true';
 }
-export function resetStopDetail(mount){
+export function resetStopDetail(mount,stops=[],days=[]){
+ const old=document.getElementById(mount.id+"-places");old?.remove();
+ const list=document.createElement("details");list.id=mount.id+"-places";list.className="map-place-list";
+ const summary=document.createElement("summary");summary.textContent="地点列表 · "+stops.length+"处（标记重叠时可在此选择）";list.append(summary);
+ stops.forEach((stop,i)=>{const p=stopPresentation(stop,days),button=document.createElement("button");button.type="button";button.textContent=(i+1)+" · "+p.name;button.addEventListener("click",()=>showStopDetail(mount,p));list.append(button);});
+ document.getElementById(mount.id+"-detail")?.after(list);
  const panel=document.getElementById(mount.id+'-detail');if(panel){panel.textContent='轻点地图标记，查看地点与过夜信息';delete panel.dataset.selected;}
 }
 export const mapLegend='<div class="map-legend" aria-label="地图图例">'+[['sight','景点'],['car','车宿'],['hotel','酒店'],['shower','可淋浴']].map(([k,l])=>'<span class="legend-'+k+'">'+icon(k)+l+'</span>').join('')+'<span><i class="legend-road"></i>路线</span><span><i class="legend-road dashed"></i>示意</span></div>';
