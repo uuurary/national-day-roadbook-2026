@@ -63,7 +63,13 @@ button.trip-pin:hover{filter:brightness(1.12)}button.trip-pin:focus-visible{outl
 button:disabled{cursor:default}
 summary:focus-visible{outline:3px solid #336e9b;outline-offset:3px;border-radius:4px}
 .packing-notes summary{cursor:pointer;min-height:44px;padding:10px 0;font-size:14px}
+.map-legend button{display:inline-flex;align-items:center;gap:4px;min-height:44px;padding:6px 10px;font-size:14px}
+.map-wrap[data-marker-filter=sight] .trip-pin:not(.pin-sight),
+.map-wrap[data-marker-filter=car] .trip-pin:not(.pin-car),
+.map-wrap[data-marker-filter=hotel] .trip-pin:not(.pin-hotel),
+.map-wrap[data-marker-filter=shower] .trip-pin:not([data-shower=true]){display:none!important}
 @media(max-width:900px){.day-map-disclosure{display:block;margin:12px 0 20px}.day-map-disclosure>summary{font-weight:600;color:var(--green)}#day-map-rail{position:static}.day-card-body #day-map-panel{margin:8px 0;padding:12px}.day-card-body{padding:16px}.day-quick{padding:12px}}
 @media(max-width:600px){.day-switcher{gap:8px;padding:8px 0;grid-template-columns:repeat(3,minmax(0,1fr))}.day-switcher button{display:flex;justify-content:center;align-items:center;gap:8px}.day-switcher button span{margin:0}.day-card .day-tab{scroll-margin-top:130px}.day-quick p{font-size:16px}.day-card-body .side-stack .panel{padding-inline:0}.main-nav a{font-size:12px}.pack-item{padding:12px 0}.check-row{gap:16px}.hero-copy .lede{font-size:16px}}
 @media(max-height:500px){.day-switcher{position:static}.day-card .day-tab{scroll-margin-top:16px}}
 @media print{.day-switcher,.hero-jump,.packing-tools,.day-map-disclosure{display:none}}
+.map-legend button[aria-pressed=true]{color:#fff}

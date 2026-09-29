@@ -25,3 +25,15 @@ test('maps follow selected day while overview contains all planned stays',()=>{f
 test('directional highway routes do not reuse reverse-side cached paths',()=>{const m=mapModel(plan.anchors,[{path:['yimei','taopark','yimei']}],null,cache);assert.equal(m.segments.length,2);assert.deepEqual(m.stops[0].orders,[1,3]);const missing=mapModel(plan.anchors,[{path:['guangde','xidi']}],0,cache);assert.equal(missing.segments[0].cached,false);});
 test('single stop and missing geometry show gracefully',()=>{assert.equal(mapModel(plan.anchors,[{path:['guangde']}],0,null).stops.length,1);assert.ok(mapModel(plan.anchors,plan.routes[0].variants[6],0,null).segments.every(s=>!s.cached));});
 test('original GCJ coordinates cover every simplified route without double conversion',async()=>{const {simplifyPath}=await import('../amap-map.mjs'),c=JSON.parse(fs.readFileSync(new URL('../data/amap-coordinates.json',import.meta.url),'utf8'));for(const [k,p]of Object.entries(pois))assert.deepEqual(c.points[plan.anchors[k].slice(1).join(',')],p.gcj);for(const days of Object.values(plan.routes[0].variants)){const m=mapModel(plan.anchors,days,null,cache);for(const p of [...m.stops.map(s=>s.point),...m.segments.flatMap(s=>simplifyPath(s.points))])assert.ok(c.points[p.join(',')]);}});
+test('native navigation uses mobile AMap schemes and exact GCJ02 coordinates',async()=>{
+ const {nativeMapURL}=await import('../core.mjs');
+ const poi={name:'停车场',id:'B123',gcj:[118.123,30.456]};
+ for(const [ua,scheme] of [['Android','androidamap:'],['iPhone','iosamap:']]){
+  const u=new URL(nativeMapURL('停车场',poi,ua));
+  assert.equal(u.protocol,scheme);assert.equal(u.hostname,'navi');
+  assert.equal(u.searchParams.get('lon'),'118.123');assert.equal(u.searchParams.get('lat'),'30.456');assert.equal(u.searchParams.get('dev'),'0');
+ }
+ assert.match(nativeMapURL('餐厅',null,'Android'),/^androidamap:\/\/poi\?/);
+ assert.equal(new URL(nativeMapURL('餐厅',null,'iPhone')).searchParams.get('name'),'餐厅');
+ assert.match(nativeMapURL('餐厅',null,'Windows'),/^https:/);
+});

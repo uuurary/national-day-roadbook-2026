@@ -1,4 +1,4 @@
-import {mapTheme,markerNode,showStopDetail,resetStopDetail} from './map-presentation.mjs?v=20260929-ux';
+import {mapTheme,markerNode,showStopDetail,resetStopDetail} from './map-presentation.mjs?v=20260929-mapfix';
 // Map selection is derived from the same selected day as the expanded itinerary.
 export function mapModel(anchors,days,index,cache){
  const selected=index===null?days:[days[index]];

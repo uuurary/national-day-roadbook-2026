@@ -1,11 +1,19 @@
-import {mapLegend} from './map-presentation.mjs?v=20260929-ux';
-import {itinerary,sumBudget,total,money,mapURL,googleURL,weatherURL,exactWeather,weatherText,clothing,validatePlan,safeLoad,eventDestination} from './core.mjs?v=20260929-ux';
-import {createTravelMap} from './amap-map.mjs?v=20260929-ux';
-import {createGallery} from './gallery.mjs?v=20260929-ux';
-import {gallery} from './data/gallery.mjs?v=20260929-ux';
+import {pois} from './data/pois.mjs';
+import {mapLegend,applyMarkerFilter} from './map-presentation.mjs?v=20260929-mapfix';
+import {itinerary,sumBudget,total,money,mapURL,googleURL,weatherURL,exactWeather,weatherText,clothing,validatePlan,safeLoad,eventDestination,nativeMapURL} from './core.mjs?v=20260929-mapfix';
+import {createTravelMap} from './amap-map.mjs?v=20260929-mapfix';
+import {createGallery} from './gallery.mjs?v=20260929-mapfix';
+import {gallery} from './data/gallery.mjs?v=20260929-mapfix';
 const $=s=>document.querySelector(s), main=$('#main');
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-const link=(url,text)=>`<a href="${esc(url)}" target="_blank" rel="noopener noreferrer">${esc(text)} ↗</a>`;
+const webLink=(url,text)=>`<a href="${esc(url)}" target="_blank" rel="noopener noreferrer">${esc(text)} ↗</a>`;
+function link(url,text){
+ if(!url.startsWith('https://uri.amap.com/search'))return webLink(url,text);
+ const name=new URL(url).searchParams.get('keyword'),clean=n=>n.replace(/（.*?）/g,'');
+ const poi=Object.values(pois).find(p=>p.name===name||clean(p.name)===name);
+ const target=nativeMapURL(name,poi,navigator.userAgent);
+ return '<a href="'+esc(target)+'" '+(target.startsWith('https:')?'target="_blank" rel="noopener noreferrer"':'data-native-map="true"')+'>'+esc(text)+' ↗</a>';
+}
 const KEY='national-day-2026-v2';
 let storage=null,saveOK=true;
 try{storage=window.localStorage;storage.setItem(`${KEY}-probe`,'1');storage.removeItem(`${KEY}-probe`);}catch{saveOK=false;}
@@ -119,6 +127,9 @@ function updateSectionNav(){let active='overview';for(const id of ['overview','d
 function observeSections(){observer=new IntersectionObserver(updateSectionNav,{rootMargin:'-10% 0px -45% 0px',threshold:0});['overview','daily','weather','packing','checks'].forEach(id=>observer.observe(document.getElementById(id)));updateSectionNav();}
 let navFrame=0;window.addEventListener('scroll',()=>{if(!navFrame)navFrame=requestAnimationFrame(()=>{updateSectionNav();navFrame=0;});},{passive:true});
 main.addEventListener('click',e=>{
+ const filter=e.target.closest('[data-map-filter]');if(filter){const mount=filter.closest('.map-legend').previousElementSibling;mount.dataset.markerFilter=filter.dataset.mapFilter;applyMarkerFilter(mount);return;}
+ const native=e.target.closest('[data-native-map]');if(native){document.getElementById('native-map-help')?.remove();const help=document.createElement('p');help.id='native-map-help';help.className='notice';help.setAttribute('role','status');help.textContent='正在尝试打开手机高德。若未跳转，请确认已安装高德，并在系统浏览器中打开本页；微信/QQ内置浏览器可能拦截。不会自动跳到网页。';native.after(help);}
+
  const quick=e.target.closest('[data-switch-day]');if(quick){const n=Number(quick.dataset.switchDay);if(n!==state.day||!dayOpen)document.querySelector('[data-day="'+n+'"]').click();else document.querySelector('[data-day="'+n+'"]').scrollIntoView({block:'start'});return;}
  const route=e.target.closest('[data-route]');
  if(route){state.route=route.dataset.route;state.day=0;dayOpen=true;mapScope='day';render();document.querySelector(`[data-route="${state.route}"]`).focus({preventScroll:true});announce('已切换路线，日期与预算已更新');return;}

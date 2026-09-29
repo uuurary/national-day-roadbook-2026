@@ -20,7 +20,7 @@ export function stopPresentation(stop,days){
 }
 export function markerNode(stop,days,number,onSelect){
  const p=stopPresentation(stop,days),node=document.createElement('button');
- node.type='button';node.className='trip-pin pin-'+p.kind;node.dataset.stop=stop.key;node.dataset.kind=p.kind;
+ node.type='button';node.className='trip-pin pin-'+p.kind;node.dataset.stop=stop.key;node.dataset.kind=p.kind;node.dataset.shower=String(p.shower);
  node.setAttribute('aria-label',number+' · '+stop.name+' · '+p.note);node.title=stop.name+' · '+p.note;
  node.innerHTML='<span class="pin-face">'+icon(p.kind)+'<span class="pin-number"></span>'+(p.shower?'<span class="pin-shower">'+icon('shower')+'</span>':'')+'</span>';
  node.querySelector('.pin-number').textContent=String(number);
@@ -36,8 +36,16 @@ export function resetStopDetail(mount,stops=[],days=[]){
  const old=document.getElementById(mount.id+"-places");old?.remove();
  const list=document.createElement("details");list.id=mount.id+"-places";list.className="map-place-list";
  const summary=document.createElement("summary");summary.textContent="地点列表 · "+stops.length+"处（标记重叠时可在此选择）";list.append(summary);
- stops.forEach((stop,i)=>{const p=stopPresentation(stop,days),button=document.createElement("button");button.type="button";button.textContent=(i+1)+" · "+p.name;button.addEventListener("click",()=>showStopDetail(mount,p));list.append(button);});
+ stops.forEach((stop,i)=>{const p=stopPresentation(stop,days),button=document.createElement("button");button.type="button";button.dataset.kind=p.kind;button.dataset.shower=String(p.shower);button.textContent=(i+1)+" · "+p.name;button.addEventListener("click",()=>showStopDetail(mount,p));list.append(button);});
  document.getElementById(mount.id+"-detail")?.after(list);
  const panel=document.getElementById(mount.id+'-detail');if(panel){panel.textContent='轻点地图标记，查看地点与过夜信息';delete panel.dataset.selected;}
+ applyMarkerFilter(mount);
 }
-export const mapLegend='<div class="map-legend" aria-label="地图图例">'+[['sight','景点'],['car','车宿'],['hotel','酒店'],['shower','可淋浴']].map(([k,l])=>'<span class="legend-'+k+'">'+icon(k)+l+'</span>').join('')+'<span><i class="legend-road"></i>路线</span><span><i class="legend-road dashed"></i>示意</span></div>';
+export function applyMarkerFilter(mount){
+ const filter=mount.dataset.markerFilter||'all',list=document.getElementById(mount.id+'-places');let count=0;
+ list?.querySelectorAll('button').forEach(b=>{b.hidden=!(filter==='all'||(filter==='shower'?b.dataset.shower==='true':b.dataset.kind===filter));if(!b.hidden)count++;});
+ const legend=mount.nextElementSibling;legend?.querySelectorAll('[data-map-filter]').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.mapFilter===filter)));
+ if(list){const summary=list.querySelector('summary');summary.textContent='地点列表 · 当前筛选 '+count+' 处'+(count?'':'（此范围暂无此类地点）');}
+ const panel=document.getElementById(mount.id+'-detail');if(panel){panel.textContent='当前筛选 '+count+' 处；路线不变。点击标记或地点列表查看。';delete panel.dataset.selected;}
+}
+export const mapLegend='<div class="map-legend" aria-label="地图图例">'+[['all','全部'],['sight','景点'],['car','车宿'],['hotel','酒店'],['shower','可淋浴']].map(([k,l])=>'<button type="button" data-map-filter="'+k+'" aria-pressed="'+(k==='all')+'" class="legend-'+k+'">'+(k==='all'?'':icon(k))+l+'</button>').join('')+'<span><i class="legend-road"></i>路线</span><span><i class="legend-road dashed"></i>示意</span></div>';

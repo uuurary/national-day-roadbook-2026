@@ -1,18 +1,20 @@
-import {mapModel,createItineraryMap} from './itinerary-map.mjs?v=20260929-ux';
+import {mapModel,createItineraryMap} from './itinerary-map.mjs?v=20260929-mapfix';
 
-import {mapTheme,markerNode,showStopDetail,resetStopDetail} from './map-presentation.mjs?v=20260929-ux';
+import {mapTheme,markerNode,showStopDetail,resetStopDetail} from './map-presentation.mjs?v=20260929-mapfix';
 let sdkPromise,configPromise,coordinatePromise;
-function getConfig(){if(!configPromise)configPromise=fetch('map-config.json',{signal:AbortSignal.timeout(6000),cache:'no-cache'}).then(r=>{if(!r.ok)throw Error('地图配置加载失败');return r.json();});return configPromise;}
+async function fetchTimed(url,timeout){const controller=new AbortController(),timer=setTimeout(()=>controller.abort(),timeout);try{return await fetch(url,{signal:controller.signal,cache:'no-cache'});}finally{clearTimeout(timer);}}
+function getConfig(){if(!configPromise)configPromise=fetchTimed('map-config.json',10000).then(r=>{if(!r.ok)throw Error('地图配置加载失败');return r.json();});return configPromise;}
 function loadSDK(config){
+ if(window.AMap?.Map)return Promise.resolve(window.AMap);
  if(!sdkPromise)sdkPromise=new Promise((resolve,reject)=>{
   if(!config.key||!config.securityJsCode||config.publicCredentialsAuthorized!==true){reject(Error('高德公开配置未确认'));return;}
   window._AMapSecurityConfig={securityJsCode:config.securityJsCode};
   const script=document.createElement('script');let settled=false;
   const finish=(error)=>{if(settled)return;settled=true;clearTimeout(timer);script.onload=script.onerror=null;error?reject(error):resolve(window.AMap);};
-  const timer=setTimeout(()=>finish(Error('高德组件加载超时')),15000);
+  const timer=setTimeout(()=>finish(Error('SDK_TIMEOUT')),15000);
   script.src=`https://webapi.amap.com/maps?v=2.0&key=${encodeURIComponent(config.key)}`;script.async=true;
-  script.onload=()=>finish(window.AMap?.Map?null:Error('高德组件不可用'));
-  script.onerror=()=>finish(Error('高德组件加载失败'));document.head.appendChild(script);
+  script.onload=()=>finish(window.AMap?.Map?null:Error('SDK_UNAVAILABLE'));
+  script.onerror=()=>finish(Error('SDK_NETWORK_ERROR'));document.head.appendChild(script);
  });
  return sdkPromise;
 }
@@ -26,7 +28,7 @@ export function simplifyPath(points,tolerance=.00015){
 }
 async function convertPoints(A,points){
  // Cached original GCJ-02 points come from AMap; visitors do not reconvert them.
- if(!coordinatePromise)coordinatePromise=fetch('data/amap-coordinates.json',{cache:'no-cache',signal:AbortSignal.timeout(8000)}).then(r=>{if(!r.ok)throw Error('COORDINATE_CACHE_LOAD_ERROR');return r.json();});
+ if(!coordinatePromise)coordinatePromise=fetchTimed('data/amap-coordinates.json',12000).then(r=>{if(!r.ok)throw Error('COORDINATE_CACHE_LOAD_ERROR');return r.json();});
  const cache=await coordinatePromise;
  return points.map(p=>{const position=cache.points?.[pointKey(p)];if(!Array.isArray(position)||position.length!==2||!position.every(Number.isFinite))throw Error('COORDINATE_CACHE_MISSING');return position;});
 }
@@ -48,12 +50,12 @@ function amapController(A,mount,status,getCache,onFailure){
  const map=new A.Map(mount,{mapStyle:mapTheme.style,viewMode:'2D',zoom:7,center:[119,30.5],resizeEnable:true,scrollWheel:false,showLabel:true,animateEnable:false});
  let disposed=false,revision=0,model,overlays=[],background=[],tripDays=[],loaded=false,frame=0,layoutTimer=0;
  mount.dataset.mapStyle=mapTheme.style;
- const completeTimer=setTimeout(()=>{if(!loaded&&!disposed)onFailure();},20000);
+ let visibleWait=0;const completeTimer=setInterval(()=>{if(loaded||disposed){clearInterval(completeTimer);return;}if(!mount.closest('details:not([open])')&&mount.offsetWidth&&mount.offsetHeight)visibleWait++;if(visibleWait>=30){clearInterval(completeTimer);onFailure(Error('BASEMAP_TIMEOUT'));}},1000);
  const sizeObserver=new ResizeObserver(()=>{clearTimeout(layoutTimer);layoutTimer=setTimeout(fit,180);});sizeObserver.observe(mount);
  let trafficState='loading',roadNote='',trafficLoadedAt='';
  function message(note){if(note!==undefined)roadNote=note;status.dataset.state=trafficState;const traffic=trafficState==='ready'?'路况已加载 · 每3分钟自动刷新 · 最近加载 '+trafficLoadedAt+'（北京时间）':trafficState==='loading'?'实时路况加载中…':'路况更新未确认，颜色可能过期；以高德导航为准。行程仍可查看。';status.textContent=traffic+'。'+roadNote;}
  const disposeTraffic=attachTraffic(A,map,state=>{trafficState=state;if(state==='ready')trafficLoadedAt=new Intl.DateTimeFormat('zh-CN',{timeZone:'Asia/Shanghai',hour:'2-digit',minute:'2-digit',second:'2-digit',hour12:false}).format(new Date());mount.dataset.trafficState=state;message();});
- map.on('complete',()=>{loaded=true;clearTimeout(completeTimer);mount.dataset.tilesReady='true';fit();});
+ map.on('complete',()=>{loaded=true;clearInterval(completeTimer);mount.dataset.tilesReady='true';fit();});
  function record(){if(disposed||!model)return;const b=map.getBounds(),sw=b.getSouthWest(),ne=b.getNorthEast();mount.dataset.zoom=String(map.getZoom());mount.dataset.bounds=JSON.stringify([sw.getLat(),sw.getLng(),ne.getLat(),ne.getLng()]);}
  map.on('moveend',record);map.on('zoomend',record);map.on('resize',fit);
  function fit(){if(disposed||!overlays.length||!mount.offsetWidth||!mount.offsetHeight)return;if(model.stops.length===1)map.setZoomAndCenter(12,model.stops[0].position,true);else map.setFitView(overlays,true,[48,40,48,40],13);record();}
@@ -72,17 +74,21 @@ function amapController(A,mount,status,getCache,onFailure){
   resize(){cancelAnimationFrame(frame);frame=requestAnimationFrame(fit);},
   zoomBy(delta){if(disposed||!model)return false;map.setZoom(Math.max(3,Math.min(18,map.getZoom()+delta)),true);record();return true;},
   resetView(){if(disposed||!model)return false;fit();return true;},
-  destroy(){disposed=true;revision++;disposeTraffic();clearTimeout(completeTimer);clearTimeout(layoutTimer);sizeObserver.disconnect();cancelAnimationFrame(frame);map.destroy();}
+  destroy(){disposed=true;revision++;disposeTraffic();clearInterval(completeTimer);clearTimeout(layoutTimer);sizeObserver.disconnect();cancelAnimationFrame(frame);map.destroy();}
  };
 }
 export function createTravelMap(mount,status,getCache){
- let controller,disposed=false,latest,failed=false,reason='';
- function fallback(error){if(disposed||failed)return;failed=true;const code=/^[A-Z_0-9]{1,80}$/.test(error?.message||'')?error.message:'LOAD_ERROR';mount.dataset.mapError=code;controller?.destroy();mount.replaceChildren();mount.dataset.provider='osm';delete mount.dataset.coordinateSystem;delete mount.dataset.tilesReady;delete mount.dataset.trafficState;status.dataset.state='unavailable';reason=`高德加载失败（${code}），已回退 OpenStreetMap；请检查域名、额度或网络。`;
+ let controller,disposed=false,latest,failed=false,reason='',started=false;
+ const retry=document.createElement('button');retry.type='button';retry.textContent='重试高德地图';retry.hidden=true;retry.className='map-retry';status.after(retry);
+ function fallback(error){if(disposed||failed)return;failed=true;retry.hidden=false;const code=/^[A-Z_0-9]{1,80}$/.test(error?.message||'')?error.message:'LOAD_ERROR';mount.dataset.mapError=code;controller?.destroy();mount.replaceChildren();mount.dataset.provider='osm';delete mount.dataset.coordinateSystem;delete mount.dataset.tilesReady;delete mount.dataset.trafficState;status.dataset.state='unavailable';reason=`高德加载失败（${code}），已回退 OpenStreetMap；可重试；若持续失败，请将此错误码反馈。`;
   controller=createItineraryMap(mount,status,getCache);if(latest)controller.show(...latest);
  }
  // Keep fallback explanation when Leaflet subsequently updates its status.
  const statusObserver=new MutationObserver(()=>{if(reason&&!status.textContent.startsWith(reason))status.textContent=reason+' '+status.textContent;});statusObserver.observe(status,{childList:true,characterData:true,subtree:true});
- status.textContent='正在加载地图组件与底图…';
- getConfig().then(async config=>{if(disposed)return;if(config.provider!=='amap'){mount.dataset.provider='osm';controller=createItineraryMap(mount,status,getCache);}else{const A=await loadSDK(config);if(disposed)return;mount.dataset.provider='amap';controller=amapController(A,mount,status,getCache,fallback);}if(latest&&!disposed)controller.show(...latest);}).catch(fallback);
- return {show(...args){latest=args;controller?.show(...args);},resize(){controller?.resize();},zoomBy(delta){return controller?.zoomBy?.(delta)||false;},resetView(){return controller?.resetView?.()||false;},destroy(){disposed=true;statusObserver.disconnect();controller?.destroy();}};
+ status.textContent='展开地图后加载高德底图。';
+ function start(){if(disposed||started||mount.closest('details:not([open])')||!mount.offsetWidth||!mount.offsetHeight)return;started=true;status.textContent='正在加载高德组件与底图…';
+ getConfig().then(async config=>{if(disposed)return;if(config.provider!=='amap'){mount.dataset.provider='osm';controller=createItineraryMap(mount,status,getCache);}else{const A=await loadSDK(config);if(disposed)return;mount.dataset.provider='amap';controller=amapController(A,mount,status,getCache,fallback);}if(latest&&!disposed)controller.show(...latest);}).catch(fallback);}
+ let startFrame=0;function scheduleStart(){cancelAnimationFrame(startFrame);startFrame=requestAnimationFrame(start);}const visibilityObserver=new ResizeObserver(scheduleStart);visibilityObserver.observe(mount);scheduleStart();
+ retry.addEventListener('click',()=>{if(disposed)return;controller?.destroy();controller=null;mount.replaceChildren();reason='';failed=false;started=false;retry.hidden=true;configPromise=null;sdkPromise=null;coordinatePromise=null;delete mount.dataset.mapError;delete mount.dataset.tilesReady;delete mount.dataset.trafficState;status.dataset.state='loading';start();});
+ return {show(...args){latest=args;scheduleStart();controller?.show(...args);},resize(){scheduleStart();controller?.resize();},zoomBy(delta){return controller?.zoomBy?.(delta)||false;},resetView(){return controller?.resetView?.()||false;},destroy(){disposed=true;cancelAnimationFrame(startFrame);visibilityObserver.disconnect();retry.remove();statusObserver.disconnect();controller?.destroy();}};
 }

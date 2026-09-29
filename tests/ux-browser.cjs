@@ -42,5 +42,25 @@ const base=process.env.BASE_URL||'http://127.0.0.1:4173/';let browser;
  }
  await page.setViewportSize({width:375,height:812});await page.addStyleTag({content:'.event p,.day-quick p,.check-label{font-size:32px!important}'});assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth));
  assert.deepEqual(errors,[]);console.log('PASS compact mobile timeline, sticky day switch, entrance navigation, map list, checklist filter/names/counts/persistence, 375/844/1440 and enlarged text');
+ for(const [ua,scheme] of [['Mozilla/5.0 (Linux; Android 13)','androidamap://'],['Mozilla/5.0 (iPhone; CPU iPhone OS 17_0 like Mac OS X)','iosamap://']]){
+  const mobile=await browser.newContext({viewport:{width:375,height:812},userAgent:ua});
+  await mobile.route('**/map-config.json',r=>r.fulfill({json:{provider:'osm'}}));
+  await mobile.route('https://api.open-meteo.com/**',r=>r.abort());
+  const mp=await mobile.newPage();await mp.addInitScript(()=>{AbortSignal.timeout=undefined;});
+  await mp.goto(base);await mp.locator('.day-quick').waitFor();
+  assert.equal(await mp.locator('#day-map').getAttribute('data-provider'),null);
+  const a=mp.locator('.event-nav a').first();assert.ok((await a.getAttribute('href')).startsWith(scheme));
+  await a.evaluate(el=>el.addEventListener('click',e=>e.preventDefault()));await a.click();
+  assert.match(await mp.locator('#native-map-help').innerText(),/不会自动跳到网页/);
+  await mp.locator('#day-map-disclosure>summary').click();await mp.locator('#day-map .trip-pin').first().waitFor();
+  await mp.locator('#day-map + .map-legend [data-map-filter="hotel"]').click();
+  assert.equal(await mp.locator('#day-map .trip-pin:visible').count(),0);
+  await mp.locator('[data-switch-day="3"]').click();await mp.waitForSelector('#day-map[data-selection="3"]');
+  assert.equal(await mp.locator('#day-map .trip-pin:visible').count(),0);
+  await mp.locator('#day-map + .map-legend [data-map-filter="car"]').click();
+  assert.equal(await mp.locator('#day-map .trip-pin:visible').count(),2);
+  await mobile.close();
+ }
+ console.log('PASS Android/iOS native links, collapsed lazy map, missing AbortSignal.timeout, per-day marker filter persistence');
  await browser.close();
 })().catch(async e=>{console.error(e);await browser?.close();process.exitCode=1;});

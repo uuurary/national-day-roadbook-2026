@@ -4,6 +4,13 @@ export const sumBudget=days=>days.reduce((acc,d)=>acc.map((n,i)=>n+d.budget[i]),
 export const total=b=>[b[0]+b[2]+b[4]+b[6],b[1]+b[3]+b[5]+b[7]];
 export const money=b=>`¥${b[0].toLocaleString('zh-CN')}–${b[1].toLocaleString('zh-CN')}`;
 export const mapURL=name=>`https://uri.amap.com/search?keyword=${encodeURIComponent(name)}&callnative=1`;
+export function nativeMapURL(name,poi,ua){
+ const ios=/iPhone|iPad|iPod/i.test(ua),android=/Android/i.test(ua);
+ if(!ios&&!android)return mapURL(name);
+ const protocol=ios?'iosamap':'androidamap',p=new URLSearchParams({sourceApplication:'2026国庆出游计划',dev:'0'});
+ if(poi?.gcj){p.set('poiname',poi.name);p.set('poiid',poi.id);p.set('lon',poi.gcj[0]);p.set('lat',poi.gcj[1]);p.set('style','0');return protocol+'://navi?'+p;}
+ p.set(ios?'name':'keywords',name);return protocol+'://poi?'+p;
+}
 // Match only named places; generic lunch/nap stops must not invent an entrance.
 export function eventDestination(place,path,anchors){
  const destination=place.split('→').at(-1).trim();
