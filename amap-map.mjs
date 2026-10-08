@@ -1,6 +1,6 @@
-import {mapModel,createItineraryMap} from './itinerary-map.mjs?v=20260929-mapfix';
+import {mapModel,createItineraryMap} from './itinerary-map.mjs?v=20261008-actual';
 
-import {mapTheme,markerNode,showStopDetail,resetStopDetail} from './map-presentation.mjs?v=20260929-mapfix';
+import {mapTheme,markerNode,showStopDetail,resetStopDetail} from './map-presentation.mjs?v=20261008-actual';
 let sdkPromise,configPromise,coordinatePromise;
 async function fetchTimed(url,timeout){const controller=new AbortController(),timer=setTimeout(()=>controller.abort(),timeout);try{return await fetch(url,{signal:controller.signal,cache:'no-cache'});}finally{clearTimeout(timer);}}
 function getConfig(){if(!configPromise)configPromise=fetchTimed('map-config.json',10000).then(r=>{if(!r.ok)throw Error('地图配置加载失败');return r.json();});return configPromise;}

@@ -1,11 +1,18 @@
 import {mkdir,copyFile,cp,access,writeFile} from 'node:fs/promises';
-import {plan} from '../data/plan.mjs';
+import {plan as archived} from '../data/plan.mjs';
+import {plan} from '../data/actual-plan.mjs';
+import {gcjToWgs} from '../coordinates.mjs';
+import {readFile} from 'node:fs/promises';
 import {validatePlan} from '../core.mjs';
 import {fileURLToPath} from 'node:url';
 import path from 'node:path';
 const root=path.resolve(path.dirname(fileURLToPath(import.meta.url)),'..');
-const files=['map-presentation.mjs','coordinates.mjs','packing-list.txt','index.html','app.js','gallery.mjs','core.mjs','itinerary-map.mjs','amap-map.mjs','map-config.json','style.css','favicon.svg','LICENSE','NOTICE.md','README.md','site-config.json','.nojekyll'];
+const files=['actual-view.mjs','map-presentation.mjs','coordinates.mjs','packing-list.txt','index.html','app.js','gallery.mjs','core.mjs','itinerary-map.mjs','amap-map.mjs','map-config.json','style.css','favicon.svg','LICENSE','NOTICE.md','README.md','site-config.json','.nojekyll'];
 validatePlan(plan);
+await writeFile(path.join(root,'data','archive-plan.json'),JSON.stringify(archived,null,2)+'\n','utf8');
+const coords=JSON.parse(await readFile(path.join(root,'data','amap-coordinates.json'),'utf8'));
+for(const p of Object.values(plan.pois)){const [lng,lat]=gcjToWgs(p.gcj);coords.points[[lat,lng].join(',')]=p.gcj;}
+await writeFile(path.join(root,'data','amap-coordinates.json'),JSON.stringify(coords)+'\n','utf8');
 await writeFile(path.join(root,'data','plan.json'),JSON.stringify(plan,null,2)+'\n','utf8');
 for(const f of files)await access(path.join(root,f));
 await mkdir(path.join(root,'dist'),{recursive:true});

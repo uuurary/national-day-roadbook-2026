@@ -15,7 +15,7 @@ export function stopPresentation(stop,days){
  const kind=stop.key==='changzhou'?'home':stay?.type||(/停车导航点/.test(stop.name)?'parking':'sight');
  const label={home:'出发 / 返程',car:'车宿',hotel:'酒店',parking:'停车导航点',sight:'景点 / 途经'}[kind];
  const clean=stop.name.replace(/（.*?）/g,'');
- const note=stay?('第'+nights.map(n=>n.i+1).join('、')+'晚 · '+label+' · '+(stay.shower?'可淋浴':'无淋浴')+(stay.type==='car'?'（用户确认；浴室时段另核）':'（区域参考，未预订）')):label+' · '+(stop.key==='changzhou'?'常州站仅为参考点，以家为准':'按实际入口导航');
+ const note=stay?('第'+nights.map(n=>n.i+1).join('、')+'晚 · '+label+' · '+(stay.shower===null?'淋浴未记录':stay.shower?'可淋浴':'无淋浴')+(stay.type==='car'?'（用户确认；浴室时段另核）':(days.some(d=>d.actual)?'（实际入住区域，酒店名未记录）':'（区域参考，未预订）'))):label+' · '+(stop.key==='changzhou'?'常州站仅为参考点，以家为准':'按实际入口导航');
  return {kind,label,name:clean,note,shower:stay?.shower===true};
 }
 export function markerNode(stop,days,number,onSelect){
