@@ -10,7 +10,7 @@ export const symbols={
 };
 export const icon=type=>'<svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">'+symbols[type]+'</svg>';
 export function stopPresentation(stop,days){
- const nights=days.map((d,i)=>({d,i})).filter(({d})=>d.path.at(-1)===stop.key&&['car','hotel'].includes(d.stay?.type));
+ const nights=days.map((d,i)=>({d,i})).filter(({d})=>(d.lodgingKey||d.path.at(-1))===stop.key&&['car','hotel'].includes(d.stay?.type));
  const stay=nights[0]?.d.stay;
  const kind=stop.key==='changzhou'?'home':stay?.type||(/停车导航点/.test(stop.name)?'parking':'sight');
  const label={home:'出发 / 返程',car:'车宿',hotel:'酒店',parking:'停车导航点',sight:'景点 / 途经'}[kind];

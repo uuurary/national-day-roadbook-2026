@@ -1,0 +1,19 @@
+.chapter-nav{display:flex;align-items:center;gap:10px;flex-wrap:wrap;padding:0 0 22px}
+.chapter-nav>span{font-size:13px;color:var(--muted)}
+.chapter-nav a{display:inline-flex;align-items:center;min-height:44px;padding:8px 14px;border:1px solid var(--line);border-radius:12px;background:var(--card);text-decoration:none;font-size:14px}
+.chapter-nav a[aria-current=page]{background:var(--green);color:#fff;border-color:var(--green)}
+.taishan .date-control{display:block;font-size:14px}
+.taishan .date-control select{display:block;margin-top:8px}
+.taishan .check-row{display:flex;gap:12px 24px;flex-wrap:wrap}
+.taishan .check-row .check-label{min-width:110px}
+.taishan .map-wrap{height:400px}
+.taishan .daily-workspace{align-items:start}
+.taishan .map-legend{gap:6px}
+.taishan .map-legend button{font-size:13px;padding-inline:8px}
+.taishan .day-switcher{grid-template-columns:repeat(3,minmax(0,1fr))}
+.taishan .weather-card .meta{overflow-wrap:anywhere}
+.taishan .budget-table td{white-space:nowrap}
+.taishan .timeline time{font-variant-numeric:tabular-nums}
+.taishan .day-card-body .day-intro>.notice{margin-bottom:16px}
+@media(max-width:600px){.chapter-nav{gap:8px}.chapter-nav>span{width:100%}.chapter-nav a{font-size:13px}.taishan .masthead{padding:20px 16px}.taishan .brand small{letter-spacing:0}.taishan .edition{font-size:12px}.taishan .map-wrap{height:310px}.taishan .date-control{width:100%;min-width:0}.taishan .check-row .check-label{min-width:calc(50% - 12px)}.taishan .hero-copy{padding:30px 24px}}
+@media(prefers-reduced-motion:reduce){.taishan *{scroll-behavior:auto!important}}

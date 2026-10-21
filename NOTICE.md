@@ -81,3 +81,7 @@ License: https://creativecommons.org/licenses/by-sa/4.0/
 These historical photos do not represent current weather or opening conditions.
 
 2026-09-28：当前轮播仅显示皖南五张历史实景照片。新增宏村和查济照片均由 Zhangzhugang 拍摄，选择 CC BY-SA 4.0 授权，下载 Wikimedia 缩略版并以 CSS 裁切展示；来源与许可链接见 data/gallery.mjs。不是2026年实时景况。旧浙江资产仅留作历史文件，不在当前网页展示。
+
+## 泰山篇章图片
+
+五张历史实景的作者、原图链接和许可见 `data/taishan-gallery.json`。其中日出图 CC BY-SA 2.5、群山与南天门图 CC BY-SA 4.0、十八盘图 Public domain、岱庙图 CC BY 3.0。页面显示裁切，保留对应许可署名。

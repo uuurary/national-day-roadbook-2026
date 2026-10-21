@@ -1,3 +1,4 @@
+import {mountChapterNavigation} from './chapters.mjs?v=20261021-taishan';
 import {pois} from './data/pois.mjs';
 import {actualDay,decorateActual} from './actual-view.mjs?v=20261008-actual';
 import {mapLegend,applyMarkerFilter} from './map-presentation.mjs?v=20261008-actual';
@@ -55,7 +56,7 @@ function render(){
  <section id="checks" class="section"><div class="section-heading">${heading('05','出发前，最后确认一下','未勾选并不代表未准备；勾选也不代替官方确认或实际预订。')}</div><div class="panel"><div class="checklist">${data.checks.map(([id,label])=>checkbox(`check-${id}`,label)).join('')}</div><p class="notice warn">车宿先试睡：按车辆手册确认驻车空调可持续运行。实际续航 450 km 不是应全部用完的里程；建议电量降至约 30% 时主动找充电，夜宿前额外留空调余量（经验缓冲，非车型耗电保证）。充满/充够后离开充电车位，不占位睡整夜。</p><label for="trip-notes"><h3>同行备忘</h3></label><textarea id="trip-notes" placeholder="例如：酒店订单、确认允许过夜的停车场、备选充电站。请勿填密码、证件号码等敏感信息。">${esc(notes)}</textarea><p class="storage-note">${storageMessage()}</p></div>
  <div class="status-grid section"><div class="panel"><h3>已确定 · 需求</h3><p>常州往返；两人、一位司机；实际续航450km；三种日期；每日午休；少量爬坡、避高处。5天4晚车宿；6天4晚车宿＋广德酒店1晚。</p><p>古镇门票已购买（用户确认）；桃花潭正门可过夜无淋浴，凫峰/齐云山/呈坎可过夜及淋浴（用户确认）。酒店尚未预订。</p></div><div class="panel"><h3>待核实 · 临时信息</h3><p>当日开放、临时交通管控、天气预警、商家营业；淋浴开放时段、收费和维护；已购票适用日期、入园时段及夜游权益。</p></div><div class="panel"><h3>待办理 · 按所选天数</h3><p>6天版广德可取消酒店；已购门票如需实名、激活或预约时段，按订单办理。5天版默认不住酒店。附加体验需要时另确认，不重复买古镇门票。</p></div></div>
  <details class="panel sources"><summary>事实来源与实现边界 · 查询日期 ${data.checked}</summary><ul>${data.sources.map(([title,url,note])=>`<li>${link(url,title)}<br>${esc(note)}<br><small>查询：${data.checked}；旧公告不作为今年国庆政策。</small></li>`).join('')}</ul><p class="meta">本页可切换路线/日期、打开外部地图、获取可用天气并本地勾选。没有账号、跨设备同步、自动订票、实时充电排队或离线完整地图；不会自动推送提醒。网页照片为有署名历史实景，不表示当前开放状态。旧版 PDF 保留在仓库中，但未同步本版，不作当前攻略使用。</p></details></section>`;
- decorateActual(data);if(!data.actual){const banner=document.createElement('p');banner.className='notice';banner.innerHTML='原计划存档，不代表实际行程。<a href="?view=actual">返回实际路书 →</a>';main.prepend(banner);}
+ decorateActual(data);mountChapterNavigation(main);if(!data.actual){const banner=document.createElement('p');banner.className='notice';banner.innerHTML='原计划存档，不代表实际行程。<a href="?view=actual">返回实际路书 →</a>';main.prepend(banner);}
  heroGallery=createGallery(document.querySelector('.hero-media'),gallery,Math.max(0,gallery.findIndex(p=>p.src===route.image)));
  renderDay();renderPacking();initMap();renderWeather();loadWeather();observeSections();syncURL();persist();
 }

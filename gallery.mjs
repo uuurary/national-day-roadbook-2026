@@ -2,7 +2,7 @@ export function createGallery(figure,photos,initial=0){
  const abort=new AbortController(),options={signal:abort.signal},motion=matchMedia('(prefers-reduced-motion: reduce)');
  let index=initial,timer,paused=motion.matches,hovered=false,visible=true,destroyed=false;
  const image=figure.querySelector('img'),caption=figure.querySelector('figcaption'),fallback=figure.querySelector('.image-fallback');
- figure.classList.add('hero-gallery');figure.setAttribute('role','region');figure.setAttribute('aria-roledescription','轮播图');figure.setAttribute('aria-label','皖南路线的5张历史实景');
+ figure.classList.add('hero-gallery');figure.setAttribute('role','region');figure.setAttribute('aria-roledescription','轮播图');figure.setAttribute('aria-label',figure.dataset.galleryLabel||'皖南路线的5张历史实景');
  const stage=document.createElement('button');stage.type='button';stage.className='gallery-stage';stage.setAttribute('aria-label','点击图片，切换下一张实景');stage.append(image,fallback);figure.prepend(stage);
  const controls=document.createElement('div');controls.className='gallery-controls';
  function button(label,text,action){const node=document.createElement('button');node.type='button';node.setAttribute('aria-label',label);node.textContent=text;node.addEventListener('click',action,options);return node;}
@@ -13,7 +13,7 @@ export function createGallery(figure,photos,initial=0){
  function schedule(){clearTimeout(timer);toggle.textContent=paused?'播放轮播':'暂停轮播';toggle.setAttribute('aria-label',paused?'开始自动轮播':'暂停自动轮播');figure.dataset.playing=String(!paused&&!hovered&&visible&&!document.hidden);if(!destroyed&&!paused&&!hovered&&visible&&!document.hidden)timer=setTimeout(()=>show(index+1,false),7000);}
  function anchor(url,text){const a=document.createElement('a');a.href=url;a.textContent=text;a.target='_blank';a.rel='noopener noreferrer';return a;}
  function show(value,manual){index=(value+photos.length)%photos.length;if(manual)paused=true;const p=photos[index];figure.classList.remove('failed');figure.dataset.slide=String(index);counter.textContent=`${index+1} / ${photos.length}`;counter.setAttribute('aria-live',manual?'polite':'off');image.alt=p.alt;image.src=p.src;
-  caption.replaceChildren();const title=document.createElement('strong');title.textContent=p.title;caption.append(title,document.createElement('br'),`${p.year}年历史实景 · 非实时 · 显示裁切`,document.createElement('br'),anchor(p.source,p.author+' / 原图'),' · ',anchor(p.licenseURL,p.license));schedule();
+  caption.replaceChildren();const title=document.createElement('strong');title.textContent=p.title;caption.append(title,document.createElement('br'),`${p.year} · 历史实景 · 非实时 · 显示裁切`,document.createElement('br'),anchor(p.source,p.author+' / 原图'),' · ',anchor(p.licenseURL,p.license));schedule();
  }
  image.addEventListener('load',()=>figure.classList.remove('failed'),options);image.addEventListener('error',()=>{figure.classList.add('failed');paused=true;schedule();},options);
  stage.addEventListener('click',()=>show(index+1,true),options);

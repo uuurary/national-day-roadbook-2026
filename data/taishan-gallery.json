@@ -1,0 +1,52 @@
+[
+  {
+    "src": "assets/taishan-0.jpg",
+    "title": "泰山 · 清晨日出",
+    "alt": "泰山 · 清晨日出，历史实景",
+    "year": "2005",
+    "author": "Pfctdayelise",
+    "license": "CC BY-SA 2.5",
+    "licenseURL": "https://creativecommons.org/licenses/by-sa/2.5/",
+    "source": "https://commons.wikimedia.org/wiki/File:Sunrise_at_Mt_Tai.JPG"
+  },
+  {
+    "src": "assets/taishan-1.jpg",
+    "title": "泰山 · 层叠群山",
+    "alt": "泰山 · 层叠群山，历史实景",
+    "year": "2023",
+    "author": "Jari Kirma",
+    "license": "CC BY-SA 4.0",
+    "licenseURL": "https://creativecommons.org/licenses/by-sa/4.0/",
+    "source": "https://commons.wikimedia.org/wiki/File:A_view_from_Mount_Tai.jpg"
+  },
+  {
+    "src": "assets/taishan-2.jpg",
+    "title": "泰山 · 南天门",
+    "alt": "泰山 · 南天门，历史实景",
+    "year": "2016",
+    "author": "Antigng",
+    "license": "CC BY-SA 4.0",
+    "licenseURL": "https://creativecommons.org/licenses/by-sa/4.0/",
+    "source": "https://commons.wikimedia.org/wiki/File:%E6%B3%B0%E5%B1%B1%E5%8D%97%E5%A4%A9%E9%97%A8-20160718.jpg"
+  },
+  {
+    "src": "assets/taishan-3.jpg",
+    "title": "泰山 · 十八盘石阶",
+    "alt": "泰山 · 十八盘石阶，历史实景",
+    "year": "2008",
+    "author": "Charlie fong",
+    "license": "Public domain",
+    "licenseURL": "https://commons.wikimedia.org/wiki/File:%E6%B3%B0%E5%B1%B1_%E5%8D%97%E5%A4%A9%E9%97%A8.jpg",
+    "source": "https://commons.wikimedia.org/wiki/File:%E6%B3%B0%E5%B1%B1_%E5%8D%97%E5%A4%A9%E9%97%A8.jpg"
+  },
+  {
+    "src": "assets/taishan-4.jpg",
+    "title": "泰安 · 岱庙古建",
+    "alt": "泰安 · 岱庙古建，历史实景",
+    "year": "2014",
+    "author": "空之境界",
+    "license": "CC BY 3.0",
+    "licenseURL": "https://creativecommons.org/licenses/by/3.0/",
+    "source": "https://commons.wikimedia.org/wiki/File:%E5%B2%B1%E5%BA%99_-_panoramio.jpg"
+  }
+]

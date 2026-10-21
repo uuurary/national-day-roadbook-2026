@@ -3,7 +3,7 @@ import {mapModel,createItineraryMap} from './itinerary-map.mjs?v=20261008-actual
 import {mapTheme,markerNode,showStopDetail,resetStopDetail} from './map-presentation.mjs?v=20261008-actual';
 let sdkPromise,configPromise,coordinatePromise;
 async function fetchTimed(url,timeout){const controller=new AbortController(),timer=setTimeout(()=>controller.abort(),timeout);try{return await fetch(url,{signal:controller.signal,cache:'no-cache'});}finally{clearTimeout(timer);}}
-function getConfig(){if(!configPromise)configPromise=fetchTimed('map-config.json',10000).then(r=>{if(!r.ok)throw Error('地图配置加载失败');return r.json();});return configPromise;}
+function getConfig(){if(!configPromise)configPromise=fetchTimed(new URL('./map-config.json',import.meta.url),10000).then(r=>{if(!r.ok)throw Error('地图配置加载失败');return r.json();});return configPromise;}
 function loadSDK(config){
  if(window.AMap?.Map)return Promise.resolve(window.AMap);
  if(!sdkPromise)sdkPromise=new Promise((resolve,reject)=>{
@@ -28,7 +28,7 @@ export function simplifyPath(points,tolerance=.00015){
 }
 async function convertPoints(A,points){
  // Cached original GCJ-02 points come from AMap; visitors do not reconvert them.
- if(!coordinatePromise)coordinatePromise=fetchTimed('data/amap-coordinates.json',12000).then(r=>{if(!r.ok)throw Error('COORDINATE_CACHE_LOAD_ERROR');return r.json();});
+ if(!coordinatePromise)coordinatePromise=fetchTimed(new URL('./data/amap-coordinates.json',import.meta.url),12000).then(r=>{if(!r.ok)throw Error('COORDINATE_CACHE_LOAD_ERROR');return r.json();});
  const cache=await coordinatePromise;
  return points.map(p=>{const position=cache.points?.[pointKey(p)];if(!Array.isArray(position)||position.length!==2||!position.every(Number.isFinite))throw Error('COORDINATE_CACHE_MISSING');return position;});
 }
