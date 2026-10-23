@@ -18,7 +18,7 @@ await writeFile(path.join(root,'data','plan.json'),JSON.stringify(plan,null,2)+'
 const photos=JSON.parse(await readFile(path.join(root,'data','taishan-gallery.json'),'utf8'));
 if(photos.length!==5||taishan.days.length!==3)throw Error('Taishan chapter incomplete');
 await writeFile(path.join(root,'data','taishan.json'),JSON.stringify({...taishan,photos},null,2)+'\n','utf8');
-const packText=taishan.chapter.title+' · 轻装清单\n11月6—8日，四人高铁往返；个人物品每人一份，共用品一份。\n\n'+taishan.packing.map(p=>'[ ] '+p.category+'｜'+({personal:'每人自带',shared:'同行共用',optional:'可选'}[p.scope])+'｜'+p.label).join('\n')+'\n\n上山只背小包，大行李留酒店；临出发复查泰山景区天气和临时通知。\n';
+const packText=taishan.chapter.title+' · 轻装清单\n11月6—8日，四人高铁往返；个人物品每人一份，共用品一份。\n\n'+taishan.packing.map(p=>'[ ] '+p.category+'｜'+({personal:'每人自带',shared:'同行共用',optional:'可选'}[p.scope])+'｜'+p.label).join('\n')+'\n\n上山只背小包，大行李提前确认寄存；仅订11月7—8日两间一晚，上午提前入住另确认；临出发复查泰山景区天气和临时通知。\n';
 await writeFile(path.join(root,'data','taishan-packing.txt'),packText,'utf8');
 for(const f of files)await access(path.join(root,f));
 await mkdir(path.join(root,'dist'),{recursive:true});
