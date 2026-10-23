@@ -1,0 +1,9 @@
+const {chromium}=require(process.env.PLAYWRIGHT_MODULE||'playwright'),fs=require('node:fs'),path=require('node:path');
+(async()=>{const b=await chromium.launch({channel:'chrome',headless:true});try{const c=await b.newContext({viewport:{width:1440,height:1000},reducedMotion:'reduce'}),base='https://uuurary.github.io/national-day-roadbook-2026/';
+await c.route(base+'**',r=>{const rel=decodeURIComponent(new URL(r.request().url()).pathname.slice(new URL(base).pathname.length));const file=path.resolve(__dirname,'..',rel.endsWith('/')?rel+'index.html':rel||'index.html'),types={'.html':'text/html','.js':'text/javascript','.mjs':'text/javascript','.css':'text/css','.json':'application/json','.jpg':'image/jpeg'};return r.fulfill({body:fs.readFileSync(file),contentType:types[path.extname(file)]||'application/octet-stream'});});
+await c.route('https://api.open-meteo.com/**',r=>r.abort());const p=await c.newPage();await p.goto(base+'chapters/2026-11-taishan/');await p.locator('#map').scrollIntoViewIfNeeded();await p.waitForSelector('#map[data-provider="amap"][data-tiles-ready="true"]',{timeout:90000});
+await p.addStyleTag({content:'#map{width:960px!important;height:400px!important;max-width:none!important}'});await p.waitForTimeout(1500);
+fs.mkdirSync('tmp/pdfs',{recursive:true});await p.locator('#map').screenshot({path:'tmp/pdfs/taishan-all.png'});
+await p.locator('[data-overview="mountain"]').click();await p.waitForFunction(()=>!document.querySelector('#map').dataset.stops.includes('changzhou'));await p.waitForTimeout(1500);await p.locator('#map').screenshot({path:'tmp/pdfs/taishan-mountain.png'});
+console.log('Captured both AMap route figures with original attribution');
+}finally{await b.close();}})().catch(e=>{console.error(String(e).replace(/[a-f0-9]{32}/gi,'[redacted]'));process.exitCode=1;});

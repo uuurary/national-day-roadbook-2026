@@ -24,4 +24,6 @@ for(const f of files)await access(path.join(root,f));
 await mkdir(path.join(root,'dist'),{recursive:true});
 for(const f of files)await copyFile(path.join(root,f),path.join(root,'dist',f));
 for(const f of ['data','vendor','assets','chapters'])await cp(path.join(root,f),path.join(root,'dist',f),{recursive:true});
+await mkdir(path.join(root,'dist','output','pdf'),{recursive:true});
+try{await copyFile(path.join(root,'output','pdf','2026-11-泰山.pdf'),path.join(root,'dist','output','pdf','2026-11-泰山.pdf'));}catch(error){if(error.code!=='ENOENT')throw error;}
 console.log('Static site built in dist/. Public map configuration included; no server components.');
