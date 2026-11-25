@@ -11,3 +11,10 @@ test('Suxi transport has separate route/mode/duration and notes',()=>{
  }
  for(const t of transport){assert.ok(t.route);assert.ok(t.note);assert.ok(t.time);}
 });
+
+test('Final Suxi itinerary contains no discarded itinerary or revision commentary',()=>{
+ const text=JSON.stringify({days,lodging,transport});
+ assert.doesNotMatch(text,/原山塘|山塘街夜游取消|住宿改到|不再去湖西|纠正万象汇|新增月光|只保留选定路线/);
+ assert.equal(days[0].timeline.length,18);assert.equal(days[1].timeline.length,14);
+ assert.match(days[0].planB,/尹山湖/);assert.match(days[1].timeline.at(-1).note,/75—90分钟/);
+});

@@ -31,3 +31,12 @@ export function navigationOptions(poi,env={},mode='walking'){
   web:'https://uri.amap.com/search?'+new URLSearchParams({keyword:poi.query||poi.name,callnative:'1'}),
   embedded:/MicroMessenger|QQ\//i.test(env.userAgent||'')};
 }
+
+export function dailyNavigationKeys(events){
+ const seen=new Set();
+ return events.map(event=>{
+  const key=event.travel?.navKey||event.key;
+  if(!key||event.kind==='food'||seen.has(key))return null;
+  seen.add(key);return key;
+ });
+}

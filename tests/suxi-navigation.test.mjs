@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {mobilePlatform,amapAppURL,amapIntentURL,navigationOptions} from '../suxi-navigation.mjs';
+import {mobilePlatform,amapAppURL,amapIntentURL,navigationOptions,dailyNavigationKeys} from '../suxi-navigation.mjs';
 const poi={name:'留园',id:'B02000IFFA',gcj:[120.59226,31.315369]};
 test('Suxi native routes use documented iOS path and Android route/plan with GCJ02',()=>{
  const ios=new URL(amapAppURL(poi,'ios','walking'));
@@ -33,4 +33,11 @@ test('Suxi reference hotels stay native keyword search, never fake an exact hote
   assert.ok(!u.searchParams.has('dlat'));
  }
  assert.ok(!navigationOptions(poi,{userAgent:'iPhone'}).primary.startsWith('http'));
+});
+
+test('Repeated destinations get one daily navigation and food stops add no duplicates',()=>{
+ const events=[{key:'xiyuan',kind:'drive'},{key:'xiyuan',kind:'core'},{key:'xiyuan',kind:'food'},{key:'jinji',kind:'drive'},{key:'timesquare',kind:'drive',travel:{navKey:'timesquare'}},{key:'hotel',kind:'rest'},{key:'hotel',kind:'rest'}];
+ assert.deepEqual(dailyNavigationKeys(events),['xiyuan',null,null,'jinji','timesquare','hotel',null]);
+ assert.deepEqual(dailyNavigationKeys(events),['xiyuan',null,null,'jinji','timesquare','hotel',null]);
+ assert.deepEqual(dailyNavigationKeys([{kind:'food',key:'hotel'},{kind:'drive',key:'pingjiang'}]),[null,'pingjiang']);
 });

@@ -14,7 +14,7 @@
 .suxi .event-notes{margin-top:10px;border-top:1px dashed var(--line);padding-top:4px}
 .suxi .event-notes summary{font-size:14px;font-weight:500;color:var(--muted);display:list-item;padding:8px 0}
 .suxi .event-notes p{margin:0 0 10px}.suxi .place-navigation{display:flex;align-items:center;gap:8px 14px;flex-wrap:wrap}
-.suxi .map-help-button{font-size:14px;padding:8px 10px;background:transparent;min-height:44px}
+
 .suxi .transport-route{font-size:14px}.suxi .map-launch-dialog{border:1px solid var(--line);border-radius:20px;color:var(--ink);background:var(--card);padding:24px;width:min(560px,calc(100% - 24px));max-height:calc(100dvh - 32px);overflow:auto}
 .suxi .map-launch-dialog::backdrop{background:#162d2399}.suxi .map-launch-dialog form{display:flex;justify-content:flex-end;margin-bottom:12px}
 .suxi .map-launch-dialog h2{font-size:24px}.suxi .map-launch-dialog p{font-size:14px}

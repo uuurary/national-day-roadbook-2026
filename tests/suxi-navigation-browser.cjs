@@ -24,7 +24,11 @@ async function setup(browser,ua){
  const u=new URL(await link.getAttribute('href'));assert.equal(u.protocol,'iosamap:');assert.equal(u.hostname,'path');assert.equal(u.searchParams.get('t'),'2');
  assert.equal(await link.getAttribute('target'),'_self');
  await link.click();assert.equal((await p.evaluate(()=>window.__nativeAttempts))[0],u.href);
- await p.locator('#map-launch-dialog[open]').waitFor({timeout:6000});
+ await p.waitForTimeout(3000);assert.ok(!(await p.locator('#map-launch-dialog').isVisible()));
+ assert.equal(await p.locator('.map-help-button').count(),0);assert.equal(await p.getByText('无法唤起？',{exact:true}).count(),0);
+ const unique=async()=>{const keys=await p.locator('#day-body .place-nav').evaluateAll(nodes=>nodes.map(n=>n.dataset.mapPoi));assert.equal(keys.length,new Set(keys).size);assert.ok(keys.every(Boolean));};
+ await unique();assert.doesNotMatch(await p.locator('body').innerText(),/只保留选定路线|不是万象汇|原山塘|住宿改到/);
+ await p.locator('#navigation-help').click();await p.locator('#map-launch-dialog[open]').waitFor();
  assert.match(await p.locator('#map-launch-message').innerText(),/Safari/);
  assert.equal(new URL(await p.locator('#map-launch-options a').first().getAttribute('href')).protocol,'iosamap:');
  await p.locator('#map-launch-options a').first().click();assert.equal((await p.evaluate(()=>window.__nativeAttempts)).length,2);
@@ -33,7 +37,7 @@ async function setup(browser,ua){
  assert.match(await drive.locator('.event-travel').innerText(),/养育巷.*时代广场.*月光码头/);
  assert.match(await drive.locator('.event-notes').innerText(),/备注与提示/);
  assert.ok(!(await drive.locator('.event-notes').getAttribute('open')));
- await drive.locator('summary').click();assert.match(await drive.locator('.event-notes p').innerText(),/湖西音乐喷泉/);
+ await drive.locator('summary').click();assert.match(await drive.locator('.event-notes p').innerText(),/湖东月光码头/);
  assert.doesNotMatch(await drive.locator('.event-notes p').innerText(),/1号线往钟南街/);
  assert.equal(await p.locator('.transport-summary .transport-route').count(),4);
  for(const width of [375,844,1440]){
@@ -41,18 +45,20 @@ async function setup(browser,ua){
   assert.ok(await p.evaluate(()=>document.documentElement.scrollWidth<=innerWidth));
   fs.mkdirSync('qa/current',{recursive:true});await p.screenshot({path:'qa/current/suxi-transport-'+width+'.png'});
  }
- await p.setViewportSize({width:375,height:812});await p.locator('.map-help-button').first().click();
+ await p.setViewportSize({width:375,height:812});await p.locator('#navigation-help').click();
  await p.screenshot({path:'qa/current/suxi-map-help-iphone.png'});
  await p.evaluate(()=>Object.defineProperty(navigator,'clipboard',{value:{writeText:()=>Promise.reject(Error('denied'))},configurable:true}));
  await p.locator('[data-copy-map="map-copy-place"]').click();await p.waitForFunction(()=>document.querySelector('#map-copy-status').textContent.includes('长按'));
- await p.getByRole('button',{name:'关闭导航帮助'}).click();await p.selectOption('#date-select','1');
+ await p.getByRole('button',{name:'关闭导航帮助'}).click();
+ const hotel=p.locator('#day-body a.place-nav[data-map-poi="hotel"]');assert.equal(await hotel.count(),1);assert.equal(new URL(await hotel.getAttribute('href')).hostname,'poi');assert.equal(await p.locator('#stay .place-nav').count(),0);
+ await p.selectOption('#date-select','1');await unique();assert.equal(await p.locator('#day-body [data-map-poi="wuxi"]').count(),1);
+ await p.selectOption('#date-select','0');await unique();await p.selectOption('#date-select','1');
  assert.match(await p.locator('.timeline li.drive').first().locator('.event-travel').innerText(),/方式.*路线.*耗时/s);
- const hotel=p.locator('#stay a.place-nav');assert.equal(new URL(await hotel.getAttribute('href')).hostname,'poi');
  const {page:a}=await setup(browser,'Mozilla/5.0 (Linux; Android 14) Chrome/130 Mobile Safari/537.36');
  assert.match(await a.locator('a.place-nav').first().getAttribute('href'),/^intent:\/\/route\/plan\//);
  const {page:d}=await setup(browser,'Mozilla/5.0 (Windows NT 10.0) Chrome/130');
  assert.equal(await d.locator('a.place-nav').count(),0);await d.locator('button.place-nav').first().click();
  assert.ok(await d.locator('#map-launch-dialog').isVisible());assert.match(await d.locator('#map-launch-options a').first().getAttribute('href'),/^iosamap:/);
  assert.deepEqual(errors,[]);
- console.log('PASS: separated route/notes, iPhone Safari UA native tap/ retry/timeout/copy failure, Android intent, desktop manual platform, 375/844/1440 layout. Native installed-app handoff requires real phone verification.');
+ console.log('PASS: separated route/notes, iPhone Safari UA native tap/retry/copy failure; no repeated help, no automatic popup, one navigation per destination/day, final-only itinerary copy, Android intent, desktop manual platform, 375/844/1440 layout. Native installed-app handoff requires real phone verification.');
 }finally{await browser.close();}})().catch(e=>{console.error((e.stack||String(e)).replace(/[a-f0-9]{32}/gi,'[redacted]').slice(0,1700));process.exitCode=1;});
