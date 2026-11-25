@@ -2,6 +2,7 @@ import {mkdir,copyFile,cp,access,writeFile} from 'node:fs/promises';
 import {plan as archived} from '../data/plan.mjs';
 import {plan} from '../data/actual-plan.mjs';
 import * as taishan from '../data/taishan.mjs';
+import * as suxi from '../data/suxi.mjs';
 import {gcjToWgs} from '../coordinates.mjs';
 import {readFile} from 'node:fs/promises';
 import {validatePlan} from '../core.mjs';
@@ -10,9 +11,10 @@ import path from 'node:path';
 const root=path.resolve(path.dirname(fileURLToPath(import.meta.url)),'..');
 const files=['chapters.mjs','taishan-app.mjs','taishan.css','actual-view.mjs','map-presentation.mjs','coordinates.mjs','packing-list.txt','index.html','app.js','gallery.mjs','core.mjs','itinerary-map.mjs','amap-map.mjs','map-config.json','style.css','favicon.svg','LICENSE','NOTICE.md','README.md','site-config.json','.nojekyll'];
 validatePlan(plan);
+await writeFile(path.join(root,'data','suxi.json'),JSON.stringify(suxi,null,2)+'\n','utf8');
 await writeFile(path.join(root,'data','archive-plan.json'),JSON.stringify(archived,null,2)+'\n','utf8');
 const coords=JSON.parse(await readFile(path.join(root,'data','amap-coordinates.json'),'utf8'));
-for(const p of Object.values({...plan.pois,...taishan.pois})){const [lng,lat]=gcjToWgs(p.gcj);coords.points[[lat,lng].join(',')]=p.gcj;}
+for(const p of Object.values({...plan.pois,...taishan.pois,...suxi.pois})){const [lng,lat]=gcjToWgs(p.gcj);coords.points[[lat,lng].join(',')]=p.gcj;}
 await writeFile(path.join(root,'data','amap-coordinates.json'),JSON.stringify(coords)+'\n','utf8');
 await writeFile(path.join(root,'data','plan.json'),JSON.stringify(plan,null,2)+'\n','utf8');
 const photos=JSON.parse(await readFile(path.join(root,'data','taishan-gallery.json'),'utf8'));
@@ -23,6 +25,7 @@ await writeFile(path.join(root,'data','taishan-packing.txt'),packText,'utf8');
 for(const f of files)await access(path.join(root,f));
 await mkdir(path.join(root,'dist'),{recursive:true});
 for(const f of files)await copyFile(path.join(root,f),path.join(root,'dist',f));
+for(const f of ['suxi-app.mjs','suxi.css'])await copyFile(path.join(root,f),path.join(root,'dist',f));
 for(const f of ['data','vendor','assets','chapters'])await cp(path.join(root,f),path.join(root,'dist',f),{recursive:true});
 await mkdir(path.join(root,'dist','output','pdf'),{recursive:true});
 try{await copyFile(path.join(root,'output','pdf','2026-11-泰山.pdf'),path.join(root,'dist','output','pdf','2026-11-泰山.pdf'));}catch(error){if(error.code!=='ENOENT')throw error;}

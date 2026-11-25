@@ -108,3 +108,11 @@ AGPL-3.0。上游归属、改写范围和地图来源见 [NOTICE.md](NOTICE.md)�
 `node scripts/build.mjs` 生成篇章数据、清单TXT和含新地点的坐标缓存；运行时与国庆篇章共用高德地图和图库组件。地图连线仅作地点顺序示意，不是实际步道或高铁轨迹。
 
 皖南独立入口：`chapters/2026-10-wannan/`；泰山独立入口：`chapters/2026-11-taishan/`。原根地址继续可用。泰山PDF位于 `output/pdf/2026-11-泰山.pdf`，网页清单区域有下载入口。
+
+## 2026-11-苏锡周末
+
+新增独立篇章 `chapters/2026-11-suxi/`，日期11月28—29日，两人。周六西园寺、留园、酒店午休、尹山湖观演和可删减的山塘夜景；周日平江路、惠山古镇、无锡万象城和无锡大剧院。住宿为石路／山塘街附近一间一晚。没有预订酒店、车票或演出票；散场时间、晚间铁路和寄存条件待核实。
+
+数据源 `data/suxi.mjs`，`node scripts/build.mjs` 生成JSON、坐标缓存及dist。按用户要求仅以原GitHub Pages仓库发布，不交付离线HTML。互动版清单独立存储于 `roadbook-2026-11-suxi-v1`，不跨设备同步。运行 `node --test tests/*.test.mjs`，浏览器测试为 `tests/suxi-browser.cjs`（需PLAYWRIGHT_MODULE；LOCAL_SITE=1使用本地文件测试高德已允许的域名）。
+
+GitHub发布仍使用原仓库；`scripts/publish.mjs` 支持 `PUBLISH_FILES` 指定白名单内的本次文件子集，要求EXPECTED_HEAD与远端一致，不强推、不覆盖未知远端改动。正式入口为 `chapters/2026-11-suxi/`；发布完成状态以GitHub Pages构建结果与线上检查为准。
