@@ -85,3 +85,7 @@ These historical photos do not represent current weather or opening conditions.
 ## 泰山篇章图片
 
 五张历史实景的作者、原图链接和许可见 `data/taishan-gallery.json`。其中日出图 CC BY-SA 2.5、群山与南天门图 CC BY-SA 4.0、十八盘图 Public domain、岱庙图 CC BY 3.0。页面显示裁切，保留对应许可署名。
+
+## 苏锡篇章首图
+
+`assets/liuyuan-ginkgo.jpg`：留园池畔银杏与古建筑秋景，xiquinhosilva，2019-11-04，CC BY 2.0。原作：https://commons.wikimedia.org/wiki/File:Lingering_Garden_66725-Suzhou_(49176963356).jpg 。许可：https://creativecommons.org/licenses/by/2.0/ 。采用Commons 1280像素缩略图、CSS容器裁切，未改色；不是2026年本周实况。许可仅适用于该图片，不改变网站代码许可。
