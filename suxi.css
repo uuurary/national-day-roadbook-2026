@@ -5,3 +5,22 @@
 @media(max-width:900px){.suxi-photo{grid-row:1}.suxi-photo .gallery-stage{height:300px;min-height:300px;flex:none}.suxi-photo .gallery-stage img{height:100%;max-height:none}}
 @media(max-width:900px){.suxi-map-panel{grid-row:1}}
 @media print{.suxi-map-panel,.suxi-cover{display:none}.suxi-workspace{display:block}}
+
+/* Keep transport instructions and advisory notes visually and semantically separate. */
+.suxi .event-travel{margin-top:10px;padding:12px 14px;border:1px solid var(--line);border-radius:12px;background:var(--blue)}
+.suxi .event-travel h4{margin:0 0 8px;font-size:15px}
+.suxi .event-travel dl{display:grid;grid-template-columns:3em minmax(0,1fr);gap:6px 10px;margin:0;font-size:14px}
+.suxi .event-travel dt{font-weight:600}.suxi .event-travel dd{margin:0;overflow-wrap:anywhere}
+.suxi .event-notes{margin-top:10px;border-top:1px dashed var(--line);padding-top:4px}
+.suxi .event-notes summary{font-size:14px;font-weight:500;color:var(--muted);display:list-item;padding:8px 0}
+.suxi .event-notes p{margin:0 0 10px}.suxi .place-navigation{display:flex;align-items:center;gap:8px 14px;flex-wrap:wrap}
+.suxi .map-help-button{font-size:14px;padding:8px 10px;background:transparent;min-height:44px}
+.suxi .transport-route{font-size:14px}.suxi .map-launch-dialog{border:1px solid var(--line);border-radius:20px;color:var(--ink);background:var(--card);padding:24px;width:min(560px,calc(100% - 24px));max-height:calc(100dvh - 32px);overflow:auto}
+.suxi .map-launch-dialog::backdrop{background:#162d2399}.suxi .map-launch-dialog form{display:flex;justify-content:flex-end;margin-bottom:12px}
+.suxi .map-launch-dialog h2{font-size:24px}.suxi .map-launch-dialog p{font-size:14px}
+.suxi .map-launch-options{display:grid;gap:10px;margin:18px 0}
+.suxi .map-launch-options a{display:flex;align-items:center;min-height:48px;padding:10px 14px;border:1px solid var(--line);border-radius:12px;text-decoration:none}
+.suxi .map-launch-options a:first-child{background:var(--green);color:var(--paper)}
+.suxi .map-launch-dialog label{display:block;font-size:14px;margin-top:18px}
+.suxi .map-launch-dialog input{display:block;width:100%;min-height:46px;padding:8px;border:1px solid var(--line);border-radius:8px;color:var(--ink);background:var(--paper);font:inherit;margin:6px 0 8px}
+@media(max-width:600px){.suxi .event-travel{padding:10px}.suxi .map-launch-dialog{padding:18px}}

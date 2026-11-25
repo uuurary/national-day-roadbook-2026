@@ -116,3 +116,5 @@ AGPL-3.0。上游归属、改写范围和地图来源见 [NOTICE.md](NOTICE.md)�
 数据源 `data/suxi.mjs`，`node scripts/build.mjs` 生成JSON、坐标缓存及dist。按用户要求仅以原GitHub Pages仓库发布，不交付离线HTML。互动版清单独立存储于 `roadbook-2026-11-suxi-v1`，不跨设备同步。运行 `node --test tests/*.test.mjs`，浏览器测试为 `tests/suxi-browser.cjs`（需PLAYWRIGHT_MODULE；LOCAL_SITE=1使用本地文件测试高德已允许的域名）。
 
 GitHub发布仍使用原仓库；`scripts/publish.mjs` 支持 `PUBLISH_FILES` 指定白名单内的本次文件子集，要求EXPECTED_HEAD与远端一致，不强推、不覆盖未知远端改动。正式入口为 `chapters/2026-11-suxi/`；发布完成状态以GitHub Pages构建结果与线上检查为准。
+
+2026-11-25苏锡修订：路线交通独立显示方式、路线、耗时；备注提示单独展开。导航模块`suxi-navigation.mjs`仅供苏锡篇章，iOS使用官方`iosamap://path`，安卓使用`amapuri://route/plan/`并为Chrome提供显式包名Intent；参考区域使用原生关键词搜索。不自动回退到网页版；无法判定设备时手动选择，支持重试及复制目的地。桌面浏览器可验证协议和点击事件，不能替代已安装高德的真实iPhone/Safari接管测试。浏览器测试：`tests/suxi-navigation-browser.cjs`。
