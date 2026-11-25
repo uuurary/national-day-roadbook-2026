@@ -89,3 +89,5 @@ These historical photos do not represent current weather or opening conditions.
 ## 苏锡篇章首图
 
 `assets/liuyuan-ginkgo.jpg`：留园池畔银杏与古建筑秋景，xiquinhosilva，2019-11-04，CC BY 2.0。原作：https://commons.wikimedia.org/wiki/File:Lingering_Garden_66725-Suzhou_(49176963356).jpg 。许可：https://creativecommons.org/licenses/by/2.0/ 。采用Commons 1280像素缩略图、CSS容器裁切，未改色；不是2026年本周实况。许可仅适用于该图片，不改变网站代码许可。
+
+苏锡轮播扩展：`assets/liuyuan-66700.jpg`、`assets/liuyuan-66728.jpg`、`assets/liuyuan-66792.jpg`、`assets/liuyuan-66776.jpg`，均为xiquinhosilva于2019-11-04拍摄的留园历史实景，CC BY 2.0。逐张原作与许可链接见`data/suxi.mjs`的`photos`导出，页面同步显示署名。采用Commons 1280像素缩略图、CSS显示裁切，未改色；不是当日实况。图片许可不改变代码许可。
