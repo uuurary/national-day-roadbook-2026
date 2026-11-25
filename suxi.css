@@ -24,3 +24,14 @@
 .suxi .map-launch-dialog label{display:block;font-size:14px;margin-top:18px}
 .suxi .map-launch-dialog input{display:block;width:100%;min-height:46px;padding:8px;border:1px solid var(--line);border-radius:8px;color:var(--ink);background:var(--paper);font:inherit;margin:6px 0 8px}
 @media(max-width:600px){.suxi .event-travel{padding:10px}.suxi .map-launch-dialog{padding:18px}}
+
+.suxi .nearby-shops{margin:28px 0;padding-top:22px;border-top:1px solid var(--line)}
+.suxi .nearby-shops>h4{font-size:20px;margin:0 0 14px}.suxi .shop-grid{display:grid;gap:14px}
+.suxi .shop-card{padding:16px;border:1px solid var(--line);border-radius:14px;background:var(--card)}
+.suxi .shop-card header{display:flex;gap:8px;flex-wrap:wrap;align-items:center;justify-content:space-between}
+.suxi .shop-card h5{font-size:17px;margin:0;line-height:1.5}.suxi .shop-card p{font-size:14px;margin:10px 0;overflow-wrap:anywhere}
+.suxi .shop-level{font-size:13px;background:var(--warm);color:#604619;border-radius:18px;padding:3px 9px}
+.suxi .shop-walk{padding:10px;background:var(--blue);border-radius:8px}.suxi .shop-extra{margin:18px 0}
+.suxi .shop-extra>summary{padding:10px 0;font-weight:600}
+.suxi .pin-shop .pin-face{background:#f4ead6;color:#604619;border-color:#8b6c32}
+.suxi .map-wrap[data-marker-filter=shop] .trip-pin:not(.pin-shop){display:none!important}

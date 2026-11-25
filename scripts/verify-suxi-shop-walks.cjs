@@ -1,0 +1,11 @@
+const {chromium}=require(process.env.PLAYWRIGHT_MODULE||'playwright'),fs=require('node:fs');
+const search=JSON.parse(fs.readFileSync('tmp/suxi-shop-search.json','utf8'));
+const selected=[['snackChangfa','B020001J6A','daoqian'],['snackZhu','B0FFJOFHH0','daoqian'],['snackWeiji','B0FFGFBX5E','daoqian'],['snackMingyue','B02000HX0J','daoqian'],['teaOT','B0HDPZJUC0','jinji'],['teaBaifen','B0J3HSR0OI','jinji'],['snackRong','B0FFFF70ZL','liuyuan'],['snackWanfu','B0FFHOUW3D','liuyuan'],['teaLemon','B0M11H25AE','liuyuan'],['snackCai','B02000HSKI','liuyuan']];
+(async()=>{const browser=await chromium.launch({channel:'chrome',headless:true});try{
+ const page=await browser.newPage(),base='https://uuurary.github.io/national-day-roadbook-2026/';await page.route(base,r=>r.fulfill({body:'<!doctype html>',contentType:'text/html'}));await page.goto(base);
+ const config=JSON.parse(fs.readFileSync('map-config.json','utf8'));await page.evaluate(c=>window._AMapSecurityConfig={securityJsCode:c.securityJsCode},config);await page.addScriptTag({url:'https://webapi.amap.com/maps?v=2.0&key='+encodeURIComponent(config.key)});await page.evaluate(()=>new Promise(r=>AMap.plugin(['AMap.PlaceSearch','AMap.Walking'],r)));
+ const yin=await page.evaluate(()=>new Promise(r=>new AMap.PlaceSearch({city:'苏州',citylimit:true,pageSize:3}).search('百分茶尹山湖商业水街',(s,d)=>r(s==='complete'?d.poiList.pois.map(p=>({name:p.name,id:p.id,address:p.address,gcj:[p.location.lng,p.location.lat]})):[]))));console.log(JSON.stringify({yin}));
+ const output=[];for(const [key,id,anchor]of selected){await page.waitForTimeout(1600);const poi=search.queries.flatMap(q=>q.nearby).find(p=>p.id===id);if(!poi)throw Error('Unknown POI '+id);
+ const walk=await page.evaluate(({from,to})=>new Promise(r=>new AMap.Walking().search(from,to,(s,d)=>r(s==='complete'?{distance:d.routes[0].distance,time:d.routes[0].time}:{status:s}))),{from:search.anchors[anchor],to:poi.gcj});const row={key,anchor,poi,walk};output.push(row);console.log(JSON.stringify(row));}
+ fs.writeFileSync('tmp/suxi-shop-walks.json',JSON.stringify({checked:'2026-11-25',shops:output,yin},null,2));
+}finally{await browser.close();}})().catch(e=>{console.error(String(e).replace(/[a-f0-9]{32}/gi,'[redacted]'));process.exitCode=1;});

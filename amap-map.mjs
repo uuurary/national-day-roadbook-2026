@@ -1,6 +1,6 @@
-import {mapModel,createItineraryMap} from './itinerary-map.mjs?v=20261008-actual';
+import {mapModel,createItineraryMap} from './itinerary-map.mjs?v=20261125-nearby-shops';
 
-import {mapTheme,markerNode,showStopDetail,resetStopDetail} from './map-presentation.mjs?v=20261008-actual';
+import {mapTheme,markerNode,showStopDetail,resetStopDetail} from './map-presentation.mjs?v=20261125-nearby-shops';
 let sdkPromise,configPromise,coordinatePromise;
 async function fetchTimed(url,timeout){const controller=new AbortController(),timer=setTimeout(()=>controller.abort(),timeout);try{return await fetch(url,{signal:controller.signal,cache:'no-cache'});}finally{clearTimeout(timer);}}
 function getConfig(){if(!configPromise)configPromise=fetchTimed(new URL('./map-config.json',import.meta.url),10000).then(r=>{if(!r.ok)throw Error('地图配置加载失败');return r.json();});return configPromise;}

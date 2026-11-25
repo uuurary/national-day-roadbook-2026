@@ -1,6 +1,7 @@
 // Shared marker semantics; derive lodging from the selected itinerary, not hard-coded POIs.
 export const mapTheme={style:'amap://styles/fresh',route:'#234c85',outline:'#fffdf5',hint:'#527f99',context:'#819b90'};
 export const symbols={
+ shop:'<path d="M6 3v7m3-7v7m-6-7v4a3 3 0 0 0 6 0M6 10v11M17 3v18m0-18c-4 2-4 9 0 9"/>',
  sight:'<path d="M3 18 9 7l4 6 3-4 5 9H3Z"/><path d="m7 10 2 2 2-2"/>',
  car:'<path d="m5 9 2-4h10l2 4M4 9h16v9H4zM7 18v2m10-2v2M7 13h2m6 0h2"/>',
  hotel:'<path d="M4 20V8h16v12M8 8V4h8v4M9 20v-5h6v5M8 11h1m6 0h1"/>',
@@ -12,10 +13,10 @@ export const icon=type=>'<svg viewBox="0 0 24 24" aria-hidden="true" fill="none"
 export function stopPresentation(stop,days){
  const nights=days.map((d,i)=>({d,i})).filter(({d})=>(d.lodgingKey||d.path.at(-1))===stop.key&&['car','hotel'].includes(d.stay?.type));
  const stay=nights[0]?.d.stay;
- const kind=stop.key==='changzhou'?'home':stay?.type||(/停车导航点/.test(stop.name)?'parking':'sight');
- const label={home:'出发 / 返程',car:'车宿',hotel:'酒店',parking:'停车导航点',sight:'景点 / 途经'}[kind];
+ const kind=stop.optional?'shop':stop.key==='changzhou'?'home':stay?.type||(/停车导航点/.test(stop.name)?'parking':'sight');
+ const label={shop:'可选店铺',home:'出发 / 返程',car:'车宿',hotel:'酒店',parking:'停车导航点',sight:'景点 / 途经'}[kind];
  const clean=stop.name.replace(/（.*?）/g,'');
- const note=stay?('第'+nights.map(n=>n.i+1).join('、')+'晚 · '+label+' · '+(stay.shower===null?'淋浴未记录':stay.shower?'可淋浴':'无淋浴')+(stay.type==='car'?'（用户确认；浴室时段另核）':(days.some(d=>d.actual)?'（实际入住区域，酒店名未记录）':'（区域参考，未预订）'))):label+' · '+(stop.key==='changzhou'?'常州站仅为参考点，以家为准':'按实际入口导航');
+ const note=stop.optional?'可选觅食／购物 · 非必经地点，不接入路线连线；营业与库存另核':stay?('第'+nights.map(n=>n.i+1).join('、')+'晚 · '+label+' · '+(stay.shower===null?'淋浴未记录':stay.shower?'可淋浴':'无淋浴')+(stay.type==='car'?'（用户确认；浴室时段另核）':(days.some(d=>d.actual)?'（实际入住区域，酒店名未记录）':'（区域参考，未预订）'))):label+' · '+(stop.key==='changzhou'?'常州站仅为参考点，以家为准':'按实际入口导航');
  return {kind,label,name:clean,note,shower:stay?.shower===true};
 }
 export function markerNode(stop,days,number,onSelect){
